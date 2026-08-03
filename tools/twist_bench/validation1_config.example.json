@@ -1,0 +1,18 @@
+{
+  "_README": "Validation1 trial metadata. Copy to <logstem>_layout.json next to the .log, or pass via --config. The placement_map is the AUTHORITATIVE sid->anatomical-role binding and OVERRIDES the validation1 preset default. Firmware sid (IMU0..IMU4) is bound to a fixed GPIO/TA0 socket, NOT to anatomy, so this MUST be filled in from the field record for every trial. Roles must be exactly: t3, t6, t12, sacrum, sternum.",
+  "subject_id": "P01",
+  "trial_id": "T1",
+  "movement": "flexion",
+  "placement_map": {
+    "IMU0": "t3",
+    "IMU1": "t6",
+    "IMU2": "t12",
+    "IMU3": "sacrum",
+    "IMU4": "sternum"
+  },
+  "up_axis_overrides": {
+    "_README": "Optional per-role longitudinal up-axis override in the SENSOR frame (one of +x,-x,+y,-y,+z,-z). Omit a role to auto-estimate it from still-window gravity. Set these once the anatomical-axis calibration is known; until then axis_convention is reported as 'pending calibration'.",
+    "sternum": "auto"
+  },
+  "notes": "Example only. Record the real sid->role map at capture time; verify chain direction against a known sync motion / on-IMU MoCap markers."
+}

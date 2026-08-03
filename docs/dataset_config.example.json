@@ -1,0 +1,66 @@
+{
+  "_comment": [
+    "Example dataset config for tools/twist_bench/dataset_adapter.py.",
+    "Every value here is a placeholder. Point `root` and the path templates at your own",
+    "recordings, list your session ids, and leave block_overrides empty unless you have",
+    "cleaning corrections that the block manifests themselves do not carry.",
+    "",
+    "The config used for the dissertation is not published: it describes human-subject",
+    "recordings collected under UCL ethics approval Project ID 2758, whose consent does",
+    "not extend to publishing the dataset. See the README section on participant data."
+  ],
+
+  "root": "..",
+
+  "paths": {
+    "imu": "data/sessions/{s}.log",
+    "mocap": "data/mocap/{s}_mocap.csv",
+    "manifest": "data_clean/{s}/block_manifest.json",
+    "trial_id": "{s}"
+  },
+
+  "sessions": ["S01", "S02"],
+
+  "_block_overrides_comment": [
+    "Per-session, per-block corrections applied on top of the manifest.",
+    "Use only for things a human decided while cleaning: a block window the automatic",
+    "segmentation got wrong, a label the protocol sheet disagrees with, or a quality tier",
+    "downgraded after review. Each key is optional.",
+    "  label   : one of flexion | extension | left_bend | right_bend | left_twist | right_twist",
+    "  window  : [start_s, end_s] in mocap time, overriding the manifest window",
+    "  quality : clean | low_conf | limitation | not_clean",
+    "  sig     : flex | lat | axial, overriding the channel derived from the label",
+    "  sign    : +1 or -1, overriding the direction derived from the label"
+  ],
+  "block_overrides": {
+    "S01": {
+      "B2": { "label": "extension", "quality": "limitation" },
+      "B5": { "label": "left_twist", "window": [647.2, 805.0], "quality": "low_conf" }
+    }
+  },
+
+  "_sign_overrides_comment": "Keyed 'session:block_id'. Use 0 to disable direction filtering for a block whose sign convention could not be established.",
+  "sign_overrides": {
+    "S02:B1": 0
+  },
+
+  "_unavailable_sessions_comment": [
+    "Sessions that exist as recordings but are excluded from analysis, mapped to the reason.",
+    "Analysis scripts write this straight into their run manifest, so the exclusion is on the",
+    "record rather than showing up as a silently smaller cohort."
+  ],
+  "unavailable_sessions": {
+    "S03": "unconfirmed sensor placement and no paired mocap; fail-closed"
+  },
+
+  "_sflp_fallback_comment": [
+    "Sessions whose on-chip SFLP quaternion stream is unreliable, and the check that decides",
+    "whether to fall back to the VQF filter:",
+    "  bend_quat_finite : sacrum->upper quaternions are structurally broken (non-finite or zero-norm)",
+    "  twist_variance   : quaternions are well-formed but frozen, carrying no information",
+    "Omit a session to always trust its SFLP stream."
+  ],
+  "sflp_fallback": {
+    "S02": "bend_quat_finite"
+  }
+}

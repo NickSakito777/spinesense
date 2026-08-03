@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SpineSense 5IMU Spine Test</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./twist.css" />
+  </head>
+  <body>
+    <main class="app-shell twist-shell">
+      <canvas id="scene"></canvas>
+
+      <header class="topbar">
+        <div>
+          <h1>SpineSense 5IMU Spine Test</h1>
+          <p id="bridgeMessage">Bridge starting</p>
+        </div>
+        <div class="controls twist-controls">
+          <span id="serialState" class="state-pill">starting</span>
+          <div class="segmented" aria-label="Motion mode">
+            <button class="mode-button active" type="button" data-mode="full3d">Full 3D</button>
+            <button class="mode-button" type="button" data-mode="twist">Twist</button>
+          </div>
+          <select id="mapSelect" class="map-select" aria-label="Axis map">
+            <option value="xyz">Map X/Y/Z</option>
+            <option value="yxz">Map Y/X/Z</option>
+            <option value="zxy">Map Z/X/Y</option>
+            <option value="xzy">Map X/Z/Y</option>
+            <option value="yzx">Map Y/Z/X</option>
+            <option value="zyx">Map Z/Y/X</option>
+          </select>
+          <div class="segmented" aria-label="Twist axis">
+            <button class="axis-button" type="button" data-axis="x">X</button>
+            <button class="axis-button" type="button" data-axis="y">Y</button>
+            <button class="axis-button active" type="button" data-axis="z">Z</button>
+          </div>
+          <button id="signButton" type="button">Sign +</button>
+          <button id="biasButton" type="button">Bias 3s</button>
+          <button id="tareButton" type="button">Tare</button>
+          <button id="autoZeroButton" class="active" type="button">Auto Zero ON</button>
+          <button id="pauseButton" type="button">Pause</button>
+        </div>
+      </header>
+
+      <section class="twist-panel" aria-label="Twist readout">
+        <div class="twist-value">
+          <span id="twistDeg">0.0</span>
+          <small>deg</small>
+        </div>
+        <div class="twist-meter" aria-hidden="true">
+          <div class="target minus">-30</div>
+          <div class="track">
+            <div class="zero-line"></div>
+            <div class="target-line target-line-minus"></div>
+            <div class="target-line target-line-plus"></div>
+            <div id="needle" class="needle"></div>
+          </div>
+          <div class="target plus">+30</div>
+        </div>
+        <div class="twist-stats">
+          <div><span>rel gyro</span><strong id="relGyro">0.00 dps</strong></div>
+          <div><span>bias</span><strong id="biasValue">0.00 dps</strong></div>
+          <div><span>samples</span><strong id="pairCount">0</strong></div>
+          <div><span>zero</span><strong id="zeroStatus">auto on</strong></div>
+        </div>
+      </section>
+
+      <section class="test-panel" aria-label="5IMU spine test">
+        <div class="test-head">
+          <strong>5IMU Spine Test</strong>
+          <span id="testState" class="test-state">idle</span>
+        </div>
+        <div class="test-phase" id="testPhase">Ready</div>
+        <div class="test-timer" id="testTimer">--</div>
+        <div class="test-progress" aria-hidden="true">
+          <div id="testProgress"></div>
+        </div>
+        <div class="test-actions">
+          <button id="startTestButton" type="button">Start Spine Test</button>
+          <button id="abortTestButton" type="button" disabled>Abort</button>
+        </div>
+        <div class="test-actions">
+          <label class="static-hold-label">Static hold
+            <select id="staticDuration" class="map-select" aria-label="Static hold duration">
+              <option value="60">60 s</option>
+              <option value="120" selected>120 s</option>
+              <option value="300">300 s</option>
+            </select>
+          </label>
+          <button id="startStaticButton" type="button">Static Hold (record)</button>
+        </div>
+        <p id="recordPath" class="record-path">No recording yet</p>
+      </section>
+
+      <section id="readout" class="readout twist-readout" aria-label="IMU readout"></section>
+    </main>
+    <script type="module" src="./twist.js?v=8"></script>
+  </body>
+</html>

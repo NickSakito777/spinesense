@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+title: "SpineSense: five-IMU garment-based trunk motion monitoring"
+message: "If you use this software, please cite both the software and the dissertation it accompanies."
+type: software
+authors:
+  - given-names: Yikai
+    family-names: Guo
+    email: rmhkuox@ucl.ac.uk
+    affiliation: "University College London"
+abstract: >-
+  Firmware and offline analysis pipeline for a five-IMU garment-based trunk
+  motion monitoring system: I3C sensor bring-up with per-device dynamic
+  addressing, body-chain orientation fusion, twist/bend decomposition,
+  optical motion-capture alignment and empirical calibration, and movement
+  classification over pre-segmented bouts. No human-subject data is included.
+keywords:
+  - inertial measurement unit
+  - trunk motion
+  - wearable sensing
+  - sensor fusion
+  - motion capture validation
+  - rehabilitation engineering
+license: MIT
+version: 1.0.0
+date-released: "2026-08-03"
+# repository-code: filled in after the repository is published
+references:
+  - type: thesis
+    title: "SpineSense: a five-IMU garment-based system for trunk motion monitoring"
+    thesis-type: "MSc dissertation"
+    authors:
+      - given-names: Yikai
+        family-names: Guo
+    institution:
+      name: "University College London"
+    year: 2026

@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Recorded sessions and everything derived from them.
+# This project's own recordings are not published — see README, "Participant data".
+# These rules are here so yours do not end up committed either.
+data/
+data_clean/
+runs/
+outputs/
+plots/
+*.npz
+*.zip
+
+# Serial logs, except the bench samples shipped with the repo
+*.log
+!docs/sample_*.log
+
+# Session-specific dataset configuration: path layout, session list, per-session
+# corrections. Schema is documented in docs/dataset_config.example.json.
+dataset_config.json
+tools/twist_bench/config/
+
+# Firmware build output
+firmware/build_*/
+*.bin
+*.elf
+*.hex
+*.map
+
+# Viewer runtime state
+tools/imu_cube_viewer/.chrome-profile/
+tools/imu_cube_viewer/.deps/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+~$*
+.vscode/
+.idea/

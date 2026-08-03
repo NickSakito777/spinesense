@@ -1,0 +1,13 @@
+# Loose requirements: enough to run the pipeline on Python >= 3.9.
+# To reproduce dissertation numbers use ../../requirements-lock.txt instead --
+# those results were produced on the pinned set, on Python 3.12.10.
+
+numpy
+scipy
+pandas
+scikit-learn
+matplotlib
+joblib            # used directly by the classification framework, not only via sklearn
+threadpoolctl     # thread-count capture for reproducibility records
+vqf               # orientation filter; alternative to the on-chip SFLP quaternion
+pyserial          # capture only

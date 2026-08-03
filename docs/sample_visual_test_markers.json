@@ -1,0 +1,28 @@
+{
+  "log": "sample_visual_test.log",
+  "protocol": "spine5_u5_top_test",
+  "parent": "IMU1",
+  "child": "IMU2",
+  "phases": [
+    {
+      "name": "neutral",
+      "label": "HOLD NEUTRAL",
+      "start_s": 0,
+      "end_s": 8
+    },
+    {
+      "name": "move",
+      "label": "MOVE SPINE",
+      "start_s": 8,
+      "end_s": 28
+    },
+    {
+      "name": "return_neutral",
+      "label": "RETURN NEUTRAL",
+      "start_s": 28,
+      "end_s": 40
+    }
+  ],
+  "notes": "5IMU back-chain recording. Board order is U5 to U1 from top to bottom. Recording starts after the 3 second get-ready countdown. Use 0-8s for bias/tare.",
+  "note": "Log timestamps are re-based to zero; phase boundaries are seconds from log start."
+}

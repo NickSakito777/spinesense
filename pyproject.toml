@@ -1,0 +1,42 @@
+[project]
+name = "spinesense"
+version = "1.0.0"
+description = "Five-IMU garment-based trunk motion monitoring: firmware, fusion pipeline, and analysis"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+authors = [{ name = "Yikai Guo", email = "rmhkuox@ucl.ac.uk" }]
+keywords = [
+    "inertial measurement unit",
+    "trunk motion",
+    "wearable sensing",
+    "sensor fusion",
+    "motion capture validation",
+    "rehabilitation engineering",
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "numpy",
+    "scipy",
+    "pandas",
+    "scikit-learn",
+    "matplotlib",
+    "joblib",
+    "threadpoolctl",
+    "vqf",
+]
+
+[project.optional-dependencies]
+capture = ["pyserial"]
+
+# 3.9 is the floor: several modules use PEP 585 builtin generics without
+# `from __future__ import annotations`. The dissertation results were produced
+# on 3.12.10 -- see requirements-lock.txt.
+
+[tool.setuptools]
+packages = []

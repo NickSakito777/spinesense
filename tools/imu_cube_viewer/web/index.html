@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SpineSense IMU Cube Viewer</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <canvas id="scene"></canvas>
+
+      <header class="topbar">
+        <div>
+          <h1>SpineSense IMU Cube Viewer</h1>
+          <p id="bridgeMessage">Bridge starting</p>
+        </div>
+        <div class="controls">
+          <span id="serialState" class="state-pill">starting</span>
+          <button id="zeroButton" type="button">Zero</button>
+          <button id="pauseButton" type="button">Pause</button>
+        </div>
+      </header>
+
+      <section id="readout" class="readout" aria-label="IMU readout"></section>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
