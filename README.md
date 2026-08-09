@@ -269,6 +269,8 @@ If you are a UCL student continuing this project, the recordings are held separa
 
 The dissertation's appendix cites implementations by path and by SHA-256. The release reorganised some of them, so `docs/paper-code-map.md` maps every cited location to where it is here, lists which hashes are unchanged, and states plainly what is not published and why.
 
+`docs/reproduction-notes.md` holds the bench material the appendices point at: the address-assignment sequence and its fault-finding table, the build/flash and start-up acceptance checks, the coordinate-processing skeleton with its reproduction checks, a worked numerical example, the per-run clock mapping parameters, the full hyper-parameter grids, and the design record behind the addressing scheme.
+
 The firmware is the strongest link: the source and `build_opt.h` in `firmware/imu_i3c_xyz_sflp/` hash byte-identical to the values the appendix records, so a reader can verify them directly against the paper.
 
 ## Citing
