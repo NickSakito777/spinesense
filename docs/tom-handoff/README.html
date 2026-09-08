@@ -182,15 +182,7 @@ does not define clinical range of motion or participant eligibility.</li>
 <li>Use participant codes <code>SOT01</code>–<code>SOT06</code>, never names or identifying details, in
 filenames, forms and notes.</li>
 <li>Frame garment-position photos to exclude the face and any identifying items.</li>
-<li>Keep data in the approved project storage locations used by the Southampton
-and UCL teams. Do not use public repositories or public links.</li>
 </ul>
-<h2 id="evidence-status">Evidence status</h2>
-<p>The firmware contains field patches written for STM32 Arduino core 2.12.0:
-slower address assignment, retries and automatic recovery after transient bus
-loss. Software-only tests can verify the host tools and file rules. Only the
-Southampton team can mark the repaired garment, Windows PC, COM-port capture and
-real participant runs as passed; the supplied forms keep those results explicit.</p>
 </main><script>
 document.querySelectorAll('pre').forEach(pre=>{const b=document.createElement('button');b.textContent='Copy';b.onclick=async()=>{const t=pre.querySelector('code').textContent;try{await navigator.clipboard.writeText(t);b.textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents(pre.querySelector('code'));const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected — press Ctrl+C';}};pre.prepend(b);});
 </script></body></html>

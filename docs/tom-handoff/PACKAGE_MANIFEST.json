@@ -26,13 +26,13 @@
   },
   {
     "path": "README.html",
-    "bytes": 10265,
-    "sha256": "62c03d382ad96a85fc5143b3609515f8a1e82c6a8409dccec7925ebf6e141211"
+    "bytes": 9672,
+    "sha256": "4c1b3b625356a70f6aad85f5bdedb4c1414c8c57bc8bf25df3b5e065351ce120"
   },
   {
     "path": "README.md",
-    "bytes": 6101,
-    "sha256": "539466ae5adcac7c9fa0ac72563971023406f0d07d61bcc279750746d760ae8f"
+    "bytes": 5545,
+    "sha256": "c1f7a9c55c2d16227b7519abbdbcb221ac7ee06185635ca63eb038b813b18c42"
   },
   {
     "path": "docs/forms.html",

@@ -105,13 +105,3 @@ intentional; the earlier D7 route was suspected damaged.
 - Use participant codes `SOT01`–`SOT06`, never names or identifying details, in
   filenames, forms and notes.
 - Frame garment-position photos to exclude the face and any identifying items.
-- Keep data in the approved project storage locations used by the Southampton
-  and UCL teams. Do not use public repositories or public links.
-
-## Evidence status
-
-The firmware contains field patches written for STM32 Arduino core 2.12.0:
-slower address assignment, retries and automatic recovery after transient bus
-loss. Software-only tests can verify the host tools and file rules. Only the
-Southampton team can mark the repaired garment, Windows PC, COM-port capture and
-real participant runs as passed; the supplied forms keep those results explicit.
