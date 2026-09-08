@@ -1,174 +1,238 @@
-# IMU Fanout Board — 设计需求 brief
+# IMU Fanout Board — Design Requirements Brief
 
-> 这份是 SpineSense FYP 项目的一块小定制 PCB 的需求说明。
+> **Historical note.** This document preserves the May 2026 fanout-board design
+> brief and should not be used as current wiring instructions. In particular,
+> the statements below that unused pins including CS may remain unconnected and
+> that a selected TA0 is pulled low describe an earlier proposal and conflict
+> with the current field firmware/wiring. Use
+> [the Tom handoff](../docs/tom-handoff/README.md) for current acquisition and
+> wiring instructions.
+
+> This is the requirements description for a small custom PCB in the SpineSense
+> FYP project.
 
 ---
 
-## 1. 这是个什么项目
+## 1. What this project is
 
-SpineSense 是我们组在做的一款穿戴式脊柱姿态监测系统——简单说就是一件 T-shirt，背后沿脊柱缝 5 颗 IMU（惯性测量单元），通过 IMU 实时检测脊柱的弯曲和旋转，用于脊柱侧弯（scoliosis）的居家筛查和监测。
+SpineSense is a wearable spinal-posture monitoring system our group is working
+on. Put simply, it is a T-shirt with five IMUs (inertial measurement units) sewn
+along the spine on the back. The IMUs detect spinal bending and rotation in real
+time for at-home scoliosis screening and monitoring.
 
-**这块定制 PCB 在系统里的角色**：
+**The role of this custom PCB in the system**:
 
 ```
-[STM32 Nucleo-U385RG-Q 主控板]
+[STM32 Nucleo-U385RG-Q controller board]
               │
-              │ 一束排线
+              │ a ribbon-cable bundle
               ▼
-        [本次定制的板]   ←—— 要设计的就是这块
+       [the custom board]   ← this is the board to design
               │
-       5 个独立接口
+       5 separate interfaces
               │
               ▼
-       5 颗 IMU 各插一个
+       one IMU plugged into each
 ```
 
-本质上就是一块**信号扇出板**：主控那边出一束线进来，板子把这束线"扇"成 5 路，5 颗 IMU 各拿一份。**板上不需要任何主动元件**（无 MCU、无逻辑芯片），是纯走线的 PCB。
+In essence, it is a **signal fanout board**: one bundle of wires comes in from
+the controller, and the board fans that bundle out into five branches, one for
+each IMU. **The board does not need any active components** (no MCU and no logic
+IC); it is a routing-only PCB.
 
 ---
 
-## 2. 选定的硬件（datasheet 都附上了）
+## 2. Selected hardware (all datasheets are attached)
 
-| 角色         | 型号                                                           | 关键文档                                                     |
-| ---------- | ------------------------------------------------------------ | -------------------------------------------------------- |
-| 主控板        | STM32 Nucleo-U385RG-Q（板号 MB1841E）                            | UM3062 user manual + STM32U385RG datasheet               |
-| IMU × 5    | STEVAL-MKI248KA（ST 商业版 IMU eval kit，内含芯片 ISM6HG256X）         | STEVAL-MKI248KA Data Brief（DB5602）+ ISM6HG256X datasheet |
-| IMU 接到板的方式 | 商业版套件自带 **DIL24 adapter (STEVAL-MKIGIBV5)**，直接插 DIL24 socket | 见 Data Brief Figure 1+2 schematic                        |
-
-→ **所以板上需要 5 个 24-pin DIL24 socket**，让 5 个 IMU adapter 直接插上去。
-
----
-
-> **⚠️ 关于下面这部分内容的说明**
->
-> 下面 §3 - §6 写的是我们目前对这块板的设想——信号怎么走、TA0 为什么要独立、上拉电阻放哪、验收怎么做。这些是我们基于手头的 datasheet 和过去几个月的项目经验整理出来的，**但不一定准确，也不一定是最优解**。
->
-> 先看完这份文档 + 附件 PDF，然后我们再聊一次，把这块板真正怎么做对齐。**如果看到我们的设想里有什么不合理、不严谨、或者有更好做法的地方——以您的判断为准，不用迁就我们写的细节**。
-> 这份文档的角色是"我们大致想做什么 + 几个工程约束"
-
----
-
-## 3. 要这块板做的事
-
-把主控来的 1 路 I3C 总线"被动扇出"到 5 颗 IMU，让 5 颗 IMU 都挂在同一条 I3C 总线上工作。
-
-
-
-主控会发 **20 根信号线** 进板子。这 20 根分**两类走法**：
-
-### 共享类（5 根，板上短接 fanout 到所有 5 个 socket）
-
-| 信号 | 说明 |
-|---|---|
-| VDD | IMU 核心电源，3.3V |
-| VDDIO | IMU IO 电源，3.3V（可以和 VDD 短接同一根 trace） |
-| GND | 地 |
-| SCL | I3C 时钟 |
-| SDA | I3C 数据 |
-
-这 5 根在板上的每个 DIL24 socket 的对应 pin **都短接到同一根 trace 上**——5 颗 IMU 共享同一对 SCL/SDA、共用同一组电源/地。
-
-### 独立类（15 根，5 个 socket 各走各的）
-
-| 信号 | 数量 | 为什么必须独立 |
+| Role | Model | Key documents |
 |---|---|---|
-| **SDO/SA0/TA0**（DIL24 pin 22） | 5 根 | **决定每颗 IMU 的地址**——见下面 §4 的说明，这条是关键 |
-| INT1（DIL24 pin 14） | 5 根 | 中断信号，每颗 IMU 单独通知主控"我有事" |
-| INT2（DIL24 pin 15） | 5 根 | 同上，第二路中断 |
+| Controller board | STM32 Nucleo-U385RG-Q (board number MB1841E) | UM3062 user manual + STM32U385RG datasheet |
+| IMU × 5 | STEVAL-MKI248KA (ST commercial IMU evaluation kit containing the ISM6HG256X) | STEVAL-MKI248KA Data Brief (DB5602) + ISM6HG256X datasheet |
+| How the IMU connects to the board | The commercial kit includes a **DIL24 adapter (STEVAL-MKIGIBV5)**, which plugs directly into a DIL24 socket | See the Data Brief, Figure 1 + Figure 2 schematic |
 
-这 15 根**每个 socket 各自走一根独立 trace**回到主控输入端连接器——5 个 socket 之间这些 pin 之间**绝不互相短接**。
-
-剩下的 DIL24 pin（CS、SCX、SDX、OSDO、OCS 等）都不用，**保持 NC 悬空**即可。
-
----
-
-## 4. 工程约束：**TA0 为什么要 5 根独立**
-
-
-**问题**：5 颗 ISM6HG256X 都是同一型号，I²C 默认地址只有 0x6A / 0x6B 两个——挂在同一根总线上根本分不出谁是谁。
-
-**我们的解法**：用 I3C 协议的 **SETDASA 命令**（CCC 0x87）配合每颗 IMU 的 **TA0 引脚（即 SDO/SA0，DIL24 pin 22）**——主控初始化时一颗一颗"点名"：
-
-1. 主控把 IMU#1 的 TA0 拉低 → IMU#1 的默认地址变成 0x6A，其余 4 颗仍是 0x6B
-2. 主控发 SETDASA 到 0x6A → 只有 IMU#1 响应，分配独立动态地址（比如 0x50）
-3. IMU#1 拿到动态地址后不再响应 SETDASA（I3C 协议规则）
-4. 主控对 IMU#2-5 重复上面流程，分别拿到 0x51-0x54
-5. 之后正常用动态地址跟每颗通信
-
-**对板设计的影响**：
-
-- 主控必须能**独立控制 5 颗 IMU 的 TA0**——所以 5 根 TA0 必须各走各的 trace，**不能在板上短接**
-- 如果短接了，5 颗 TA0 永远同电平、永远同地址，整个寻址机制崩溃，板子做出来也没法用
+→ **The board therefore needs five 24-pin DIL24 sockets**, allowing the five IMU
+adapters to plug in directly.
 
 ---
 
-## 5. 几条其他约束
-
-### 5.1 上拉电阻
-
-I3C 总线物理层需要 **SDA/SCL 上拉电阻**（拉到 VDDIO = 3.3V）。
-
-请在板上 SDA 和 SCL 两根 trace 上各加一颗 **0402 SMD 电阻贴上去**，阻值建议在 1 kΩ - 2.2 kΩ 之间（不一定要按照这个来写）
-
-> 背景：商业版 STEVAL-MKI248KA 和 Nucleo 板都不自带 SDA/SCL 上拉，所以这两颗电阻只能放在我们这块板上。
-
-### 5.2 物理布局 / garment 集成
-
-5 个 DIL24 socket 在板上怎么排列随意决定（一字线性 / 紧凑矩阵 / 自定）。背景信息：这块板最终会**装在 garment 上或附近**（沿脊柱布置），所以体积越小越好
-
-### 5.3 主控端连接器
-
-板和 Nucleo 之间用什么连接器随便，但最好稳定，并且**只要能传 20 根信号 + 电源/地，方便组装拆卸就行**——garment 上经常要拆装，连接器最好有防呆/锁扣机制。
-
-### 5.4 板上元件清单
-
-整块板只允许这几样：
-
-- **2 颗 SDA/SCL 上拉 0402 电阻**（§5.1）
-- **5 个 24-pin DIL24 socket**
-- **1 个主控端连接器**
-- 走线 trace + 焊盘 + 丝印
-
-**其他元件一概不要**（不要 buffer、不要 mux、不要 level shifter、不要 LED 装饰），保持板子尽量被动、便宜、好制造。
-
-### 5.5 PCB 制造工艺
-
-随便即可
+> **⚠️ Note about the sections below**
+>
+> Sections 3–6 describe our current concept for this board: how signals should
+> be routed, why TA0 should be independent, where the pull-up resistors should
+> be placed, and how acceptance should be performed. We compiled these points
+> from the datasheets we had and our project experience over the preceding few
+> months, **but they may not be accurate and may not be the best solution**.
+>
+> Please first read this document and the attached PDFs. We can then discuss and
+> align on how the board should actually be built. **If anything in our concept
+> appears unreasonable or insufficiently rigorous, or if there is a better
+> approach, please use your engineering judgment rather than accommodating our
+> written details.** This document describes “approximately what we want to do
+> plus several engineering constraints.”
 
 ---
 
-## 6. 验收标准
+## 3. What the board needs to do
 
-这块板我们怎么算合格：
+Passively fan out one I3C bus from the controller to five IMUs, so all five IMUs
+operate on the same I3C bus.
 
-1. **目视检查**：5 个 DIL24 socket、2 颗 SMD 电阻、主控连接器都焊好，无虚焊
-2. **万用表通断测试**：5 共享信号在所有 socket 同名 pin 都通；15 独立信号在不同 socket 之间不通（只到主控端连接器对应 pin）
-3. **实际功能测试**：5 颗 IMU 插上去 + Nucleo 接上去 + 跑 SETDASA 初始化 → 5 颗都能拿到独立动态地址 + 主控能读到 6 轴数据
+The controller will send **20 signal wires** into the board. These 20 wires fall
+into **two routing categories**:
 
-第 1-2 步设计师/板厂负责；第 3 步是我自己跑（需要等固件就绪，不阻塞板出厂）。
+### Shared signals (5 wires, shorted together on the board and fanned out to all 5 sockets)
+
+| Signal | Description |
+|---|---|
+| VDD | IMU core supply, 3.3 V |
+| VDDIO | IMU I/O supply, 3.3 V (may share the same trace as VDD) |
+| GND | Ground |
+| SCL | I3C clock |
+| SDA | I3C data |
+
+For each of these five signals, the corresponding pin on every DIL24 socket is
+**shorted to the same trace**. The five IMUs share the same SCL/SDA pair and the
+same power/ground rails.
+
+### Independent signals (15 wires, routed separately for each of the 5 sockets)
+
+| Signal | Quantity | Why it must be independent |
+|---|---:|---|
+| **SDO/SA0/TA0** (DIL24 pin 22) | 5 | **Determines each IMU's address**—see Section 4; this is critical |
+| INT1 (DIL24 pin 14) | 5 | Interrupt signal; each IMU independently tells the controller “I have an event” |
+| INT2 (DIL24 pin 15) | 5 | As above, for the second interrupt line |
+
+Each of these 15 signals has an **independent trace from its socket** back to the
+controller-side connector. These pins must **never be shorted together between
+the five sockets**.
+
+The remaining DIL24 pins (CS, SCX, SDX, OSDO, OCS, and so on) are unused and can
+be **left NC (floating)**.
 
 ---
 
-## 7. 附件清单
+## 4. Engineering constraint: **why five independent TA0 wires are needed**
 
-下面这些 PDF 我会一起发给你，详细技术信息都在里面：
+**Problem:** all five ISM6HG256X devices are the same model, and their default
+I²C addresses provide only two choices, 0x6A and 0x6B. They cannot be uniquely
+identified when placed on the same bus.
 
-| 文档                                  | 用途                                   |
-| ----------------------------------- | ------------------------------------ |
-| STEVAL-MKI248KA Data Brief (DB5602) | IMU 套件的 schematic 和 DIL24 pinout 在这里 |
-| ISM6HG256X datasheet                | IMU 芯片本身的引脚定义和电气特性                   |
-| STM32U385RG datasheet + UM3062      | 主控板的引脚和电平规格（主要给你确认 3.3V IO 兼容）       |
-|                                     |                                      |
+**Our solution:** use the I3C **SETDASA command** (CCC 0x87) together with each
+IMU's **TA0 pin** (that is, SDO/SA0, DIL24 pin 22). During initialization, the
+controller “calls” each device one at a time:
+
+1. The controller pulls IMU #1's TA0 low → IMU #1's default address becomes
+   0x6A, while the other four remain at 0x6B.
+2. The controller sends SETDASA to 0x6A → only IMU #1 responds and receives an
+   independent dynamic address (for example, 0x50).
+3. After IMU #1 receives its dynamic address, it no longer responds to SETDASA
+   (an I3C protocol rule).
+4. The controller repeats the process for IMUs #2–5, assigning 0x51–0x54.
+5. The controller then communicates normally with each IMU using its dynamic
+   address.
+
+**Implications for the board design:**
+
+- The controller must be able to **control the five IMU TA0 pins independently**.
+  Therefore, each TA0 must have its own trace and **must not be shorted together
+  on the board**.
+- If they are shorted, the five TA0 pins will always have the same level and the
+  devices will always have the same address. The entire addressing mechanism
+  will fail and the completed board will be unusable.
 
 ---
 
-## 8. 联系
+## 5. Other constraints
 
-有任何不清楚的地方随时问我——尤其是 §3 信号分类、§4 TA0 为什么独立这两块，是这块板的核心，理解错了板子做出来就用不了。
+### 5.1 Pull-up resistors
 
-其他工程细节（板尺寸、走线规则、连接器型号、PCB 工艺、布局美学）我相信你的判断，按你认为合理的方式做就行。
+The I3C physical layer needs **SDA/SCL pull-up resistors** (to VDDIO = 3.3 V).
+
+Please place one **0402 SMD resistor** on each of the SDA and SCL traces. A value
+between 1 kΩ and 2.2 kΩ is suggested (this value does not have to be followed
+exactly).
+
+> Background: neither the commercial STEVAL-MKI248KA nor the Nucleo board has
+> onboard SDA/SCL pull-ups, so these two resistors can only be placed on our
+> custom board.
+
+### 5.2 Physical layout / garment integration
+
+The arrangement of the five DIL24 sockets on the board is open (linear row,
+compact matrix, or another arrangement). For context, the board will eventually
+be **mounted on or near the garment** (with devices placed along the spine), so
+smaller is better.
+
+### 5.3 Controller-side connector
+
+The connector between the board and Nucleo is open to choice, but it should be
+stable and needs only to carry the 20 signals plus power/ground while allowing
+convenient assembly and removal. The garment will be assembled and disassembled
+often, so a keyed or locking connector is preferable.
+
+### 5.4 Onboard component list
+
+Only the following are allowed on the complete board:
+
+- **2 × SDA/SCL pull-up 0402 resistors** (Section 5.1)
+- **5 × 24-pin DIL24 sockets**
+- **1 × controller-side connector**
+- routing traces, pads, and silkscreen
+
+**No other components** (no buffer, mux, level shifter, or decorative LED).
+Keep the board as passive, inexpensive, and easy to manufacture as possible.
+
+### 5.5 PCB manufacturing process
+
+Any suitable process is acceptable.
 
 ---
 
-**文档版本**：v1（2026-05-18）
-**项目**：SpineSense FYP（UCL Rehabilitation Engineering & Assistive Technologies）
+## 6. Acceptance criteria
+
+The board is considered acceptable when:
+
+1. **Visual inspection:** the five DIL24 sockets, two SMD resistors, and
+   controller connector are soldered correctly, with no cold joints.
+2. **Multimeter continuity test:** the five shared signals have continuity to
+   the same corresponding pin on every socket; the 15 independent signals have
+   no continuity between sockets and connect only to their corresponding pins
+   on the controller-side connector.
+3. **Functional test:** with five IMUs and the Nucleo connected, SETDASA
+   initialization gives all five devices independent dynamic addresses, and the
+   controller can read six-axis data from each.
+
+The designer/board manufacturer is responsible for Steps 1–2. I will perform
+Step 3 myself (it requires the firmware to be ready and does not block board
+delivery).
+
+---
+
+## 7. Attachment list
+
+I will send the following PDFs with this document. They contain the detailed
+technical information:
+
+| Document | Purpose |
+|---|---|
+| STEVAL-MKI248KA Data Brief (DB5602) | IMU kit schematic and DIL24 pinout |
+| ISM6HG256X datasheet | Pin definitions and electrical characteristics of the IMU IC |
+| STM32U385RG datasheet + UM3062 | Controller-board pins and voltage specifications (primarily to confirm 3.3 V I/O compatibility) |
+| | |
+
+---
+
+## 8. Contact
+
+Please ask me about anything that is unclear—especially the signal categories
+in Section 3 and the reason TA0 is independent in Section 4. These are central
+to the board; if they are misunderstood, the completed board will not work.
+
+For other engineering details (board dimensions, routing rules, connector
+model, PCB process, and layout aesthetics), I trust your judgment. Please use
+the approach you consider appropriate.
+
+---
+
+**Document version:** v1 (2026-05-18)
+**Project:** SpineSense FYP (UCL Rehabilitation Engineering & Assistive Technologies)

@@ -74,7 +74,7 @@ tools/
     dataset_adapter.py     Config-driven dataset access (path layout, manifests, quality)
     locked_track_a/        Classification framework: estimators, metrics, statistics
   imu_cube_viewer/         Browser-based live orientation viewer + serial bridge
-技术笔记/                   Hardware bring-up notes (Chinese)
+技术笔记/                   Hardware bring-up notes (English translations)
 ```
 
 If you are here for a specific piece of the method, this is where each one lives:
@@ -94,7 +94,7 @@ Build artefacts, recorded sessions, and every analysis output directory are excl
 
 One convention matters before reading the fusion code: the IMU's on-chip SFLP output is a *game-rotation* quaternion. These are 6-axis parts with no magnetometer, so absolute heading is unobservable — the body-chain reconstruction resolves relative heading between adjacent segments instead of assuming a shared global yaw. Everything downstream re-tares against a still window rather than trusting an absolute reference.
 
-`技术笔记/` (Chinese) holds the hardware bring-up notes: the I3C feasibility investigation, multi-device bring-up including what failed, the pull-up and physical-layer work, the fan-out board brief, and why a 6-axis part was chosen over a 9-axis one. They cover what the pin table above cannot — the dead ends. The algorithm side is documented in the code itself and in this README rather than in separate notes.
+[Technical notes](技术笔记/README.md) contains English translations of the historical hardware bring-up notes: the I3C feasibility investigation, multi-device bring-up including what failed, the pull-up and physical-layer work, the fan-out board brief, and why a 6-axis part was chosen over a 9-axis one. They cover what the pin table above cannot — the dead ends. The algorithm side is documented in the code itself and in this README rather than in separate notes.
 
 ---
 

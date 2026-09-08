@@ -1,45 +1,69 @@
-脊柱侧弯检测对漂移很敏感，此外要接入多个传感器，涉及到实时通信和算力分配
-  
-1. 传感器相关
-    
-    1. 选择6还是9轴？
-        
-        **6轴 (Accel + Gyro):** 只能测倾斜角 (Roll/Pitch)。
-        
-        **Yaw (航向角/垂直轴旋转) 会随时间漂移**，无法测量绝对方向。
-        
-          
-        
-        **9轴 (Accel + Gyro + Mag):** 磁力计可以修正 Yaw 轴的漂移。
-        
-        脊柱侧弯（Scoliosis）不仅是侧弯，还伴随着**椎体旋转 (Vertebral Rotation)**。Schroth 疗法非常看重 "Derotation" (去旋转) 呼吸。如果只用 6轴，几分钟后 Avatar 的身体就会莫名其妙地“转圈”，演示效果会崩。
-        
-        **在无外部航向参考的情况下，6轴 IMU 的 yaw 只能靠陀螺积分，存在不可避免漂移；9轴通过磁力计提供航向参考可抑制漂移，因此对“稳定显示躯干旋转/朝向”的 avatar 演示更稳**
-        
-          
-        
-        但是！
-        
-        如果两个相邻的IMU经历相似的Yaw漂移（因为它们在相同的磁场环境中），那么计算相对角度时，漂移可能**部分抵消**。（**Estimating Relative Angles Using Two Inertial Measurement Units Without Magnetometers）**
-        
-        所以我们可以6和9轴都同时购买，比对效果
-        
-          
-        
-    
-    1. 数据处理  
-        **硬解（On-chip fusion）vs 软解（Raw data）****软解 (Raw Data -> MCU):** 传感器只吐出原始加速度/角速度，ESP32 负责跑卡尔曼/互补滤波。_风险：_ 有 4-6 个节点。ESP32 能不能同时跑 6 路高频滤波且不卡顿？
-    
-      
-    
-    **硬解 (On-chip DMP/Sensor Hub):** 传感器内部有 MCU，直接吐出 **四元数 (Quaternions)**。
-    
-    - _优势：_ ESP32 只负责搬运数据，CPU 占用极低，且厂家调教好的算法通常比自己写稳。
-    
-      
-    
-    而有个芯片可以同时满足6轴和9轴的测试：
-    
-    BNO086 并且能硬解。
-    
-    Tom给的LSM6HG256X
+# IMU Selection: Six Axes, Nine Axes and BNO086
+
+> **Historical note.** This is an early sensor-selection discussion, retained as
+> project history rather than current clinical or engineering guidance. Its
+> statements about scoliosis, screening, therapy, and avatar behaviour describe
+> the reasoning recorded at the time; they are not a medical endorsement or a
+> validated clinical claim. Use [the Tom handoff](../docs/tom-handoff/README.md)
+> for current acquisition instructions.
+
+Scoliosis detection is highly sensitive to drift. In addition, connecting
+multiple sensors involves real-time communication and allocation of computing
+resources.
+
+1. Sensor-related considerations
+
+   1. Choose six-axis or nine-axis?
+
+      **Six-axis (accelerometer + gyroscope):** can measure only tilt angles
+      (roll/pitch).
+
+      **Yaw (heading/rotation about the vertical axis) drifts over time**, so
+      absolute orientation cannot be measured.
+
+      **Nine-axis (accelerometer + gyroscope + magnetometer):** the magnetometer
+      can correct drift on the yaw axis.
+
+      Scoliosis involves not only lateral curvature but also **vertebral
+      rotation**. The Schroth method places substantial emphasis on “derotation”
+      breathing. If only a six-axis sensor is used, after a few minutes the
+      avatar's body may inexplicably begin to “spin,” undermining the
+      demonstration.
+
+      **Without an external heading reference, a six-axis IMU can obtain yaw
+      only by integrating the gyroscope, which causes unavoidable drift. A
+      nine-axis IMU provides a heading reference through the magnetometer and
+      can suppress drift, making it more stable for an avatar demonstration
+      intended to “display trunk rotation/orientation steadily.”**
+
+      However!
+
+      If two adjacent IMUs experience similar yaw drift (because they are in the
+      same magnetic environment), the drift may **partly cancel** when their
+      relative angle is calculated. (**Estimating Relative Angles Using Two
+      Inertial Measurement Units Without Magnetometers**)
+
+      We could therefore purchase both six-axis and nine-axis sensors and
+      compare their performance.
+
+   2. Data processing
+
+      **Hardware solution (on-chip fusion) vs software solution (raw data)**
+
+      **Software solution (raw data → MCU):** the sensor outputs only raw
+      acceleration/angular-velocity data, and the ESP32 runs a Kalman or
+      complementary filter. *Risk:* there are 4–6 nodes. Can the ESP32 run six
+      high-frequency filters at the same time without stalling?
+
+      **Hardware solution (on-chip DMP/sensor hub):** the sensor contains an MCU
+      and directly outputs **quaternions**.
+
+      - *Advantage:* the ESP32 only moves data, CPU usage is extremely low, and
+        an algorithm tuned by the manufacturer is generally more stable than
+        one written in-house.
+
+      One device could satisfy both the six-axis and nine-axis tests:
+
+      BNO086, which can also perform the solution in hardware.
+
+      The LSM6HG256X provided by Tom
