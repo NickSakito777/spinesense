@@ -1,0 +1,90 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Repaired-garment hardware acceptance</title><style>
+:root { color-scheme:light; font:17px/1.65 system-ui,Segoe UI,sans-serif; color:#183044; background:#eef2f5; }
+body{margin:0}main{max-width:980px;margin:24px auto;padding:36px 48px;background:white;border-radius:12px}
+h1,h2,h3{line-height:1.25;color:#102638;scroll-margin-top:20px}h1{font-size:2rem}h2{margin-top:2.4rem;border-top:1px solid #dce4e9;padding-top:1.2rem}
+a{color:#075bb5;text-underline-offset:3px}table{border-collapse:collapse;display:block;overflow-x:auto;margin:1.3rem 0;font-size:.92rem}td,th{border:1px solid #cbd7df;padding:10px 13px;vertical-align:top}th{background:#eff5fa;text-align:left}
+pre{position:relative;background:#102638;color:#f0f6fc;border-radius:8px;padding:18px;overflow:auto;line-height:1.5;font-size:.84rem;white-space:pre-wrap;overflow-wrap:anywhere}code{font-family:Consolas,monospace}p code,li code,td code{background:#eef2f6;border-radius:3px;padding:2px 4px;overflow-wrap:anywhere}
+blockquote{border-left:4px solid #e6a234;margin:18px 0;padding:6px 20px;background:#fff8e8}img{max-width:100%;height:auto}.meta{font-size:.82rem;color:#526577;border-bottom:1px solid #dce4e9;padding-bottom:16px}button{cursor:pointer;padding:5px 10px;border:1px solid #bacad5;border-radius:4px;background:#f4f8fc;color:#16354a}pre button{float:right;margin-left:12px}li{margin:.35rem 0}
+@media(max-width:700px){main{margin:0;padding:22px 18px;border-radius:0}h1{font-size:1.65rem}}
+@media print{ :root{font-size:10pt;background:white} main{padding:0;margin:0;max-width:none} button{display:none} pre{background:#f1f4f7;color:#102638;break-inside:avoid} tr,img{break-inside:avoid}h1,h2,h3{break-after:avoid}a{color:inherit} }
+</style></head><body><main><div class="meta">SpineSense · Acquisition tutorial · Offline guide &nbsp; <button onclick="window.print()">Print / Save PDF</button> &nbsp; <a href="hardware-acceptance.md">Markdown source</a></div><h1 id="repaired-garment-hardware-acceptance">Repaired-garment hardware acceptance</h1>
+<p>Complete this before the rehearsal and repeat the quick connection test at the
+start of every collection day. Do not put the garment on a participant until
+all stop conditions below are resolved.</p>
+<h2 id="record">Record</h2>
+<pre><code class="language-text">Date/time:
+Operator:
+Person who completed/verified the repair:
+Confirmed garment connector-map document/photo:
+Nucleo board ID or label:
+USB cable ID/description:
+Visible repair points:
+Connectivity result:
+Gentle-flex result:
+Streaming smoke-test session path:
+Hardware smoke-test review (formal QC is N/A until the cue rehearsal):
+Decision: ACCEPT / REJECT
+Reason and follow-up:
+</code></pre>
+<p>Save this as <code>data\hardware_acceptance_YYYY-MM-DD.txt</code>. Attach the confirmed
+connector-map image or record where it is stored. The received-garment photos
+from 11 August 2026 show the pre-repair garment only; they do not prove the final
+connector pinout or repaired state.</p>
+<h2 id="a-unpowered-inspection">A. Unpowered inspection</h2>
+<p>Disconnect USB. Check the garment, adapter and five sensor modules:</p>
+<ul>
+<li>five modules are present and held securely;</li>
+<li>the repaired points and connector have strain relief;</li>
+<li>no bare conductor, scorched part, liquid or visibly cracked board is present;</li>
+<li>the confirmed 2×5 connector map is available and its physical orientation is
+unambiguous;</li>
+<li>the adapter routes signals to D15, D14, 3V3, GND and TA0 D2/D4/D6/D8/D9 as
+listed in <code>README.md</code>;</li>
+<li>no cable will pull across or press into the participant during movement.</li>
+</ul>
+<p><strong>Reject and stop before power</strong> if any item fails, if the connector map is only
+a guess, or if 3V3/GND identity is uncertain. Hardware continuity, resistance
+or short-circuit measurements should be performed only by someone competent to
+make them and interpreted against the repair record.</p>
+<h2 id="b-five-sensor-connectivity-test">B. Five-sensor connectivity test</h2>
+<p>Flash the connectivity sketch as described in <code>BUILD.md</code>. Open Serial Monitor at
+115200 baud and reset the board. A scan repeats approximately every three
+seconds.</p>
+<ol>
+<li>Confirm the banner lists D2, D4, D6, D8 and D9.</li>
+<li>Watch at least three consecutive scans without touching the garment.</li>
+<li>Every scan must identify all five IMUs and end <code>RESULT: ALL_PASS</code>.</li>
+<li>While watching at least three more scans, gently flex the cable bundle and
+repaired connector through the small amount of movement it will encounter in
+normal wear. Do not pull a sensor or sharply fold the conductive textile.</li>
+<li>All flex-test scans must still end <code>RESULT: ALL_PASS</code>.</li>
+</ol>
+<p>Any missing IMU, <code>WHO_AM_I</code> mismatch, initialization failure or intermittent
+result is a rejection. Power down, inspect/reseat only the accessible connector,
+then repeat the entire test. If failure follows garment movement or returns
+after reseating, the repair requires investigation; do not collect around it.</p>
+<h2 id="c-streaming-smoke-test">C. Streaming smoke test</h2>
+<p>Flash the streaming sketch, close Serial Monitor, and create a <code>CHECK</code> session:</p>
+<pre><code class="language-powershell">Set-Location C:\SpineSense\tom
+.\.venv\Scripts\python.exe tools\session.py create --subject CHECK --round 0 --root data
+</code></pre>
+<p>Paste the printed directory into these commands. First record taps as specified
+in the session plan and build its offline review page, then record a 60-second
+stream while a wearer or garment stand remains still and the operator gently
+moves each sensor one at a time. Stop each capture with Ctrl+C.</p>
+<pre><code class="language-powershell">.\.venv\Scripts\python.exe tools\session.py capture --session &quot;PASTE_SESSION_PATH&quot; --serial COM3 --kind tap
+.\.venv\Scripts\python.exe tools\review_taps.py --session &quot;PASTE_SESSION_PATH&quot;
+.\.venv\Scripts\python.exe tools\session.py capture --session &quot;PASTE_SESSION_PATH&quot; --serial COM3 --kind imu --seconds 60
+</code></pre>
+<p>For this hardware smoke test, cue files are not expected, so inspect the capture
+console, logs and generated <code>tap_review_*.html</code> manually. Confirm all five
+sensor counts rise, each physical tap group appears clearly in one sensor trace,
+and no sensor disappears for an interval. Record every <code>READ_FAIL</code> and <code>RECOVER</code>
+line in the acceptance record. The tap review is a visualization for a human;
+it does not assign positions or issue a pass automatically.</p>
+<p>Accept the hardware only after sections A–C are satisfactory. The formal
+rehearsal in the session plan is still required because it verifies the complete
+capture-and-cue chain.</p>
+</main><script>
+document.querySelectorAll('pre').forEach(pre=>{const b=document.createElement('button');b.textContent='Copy';b.onclick=async()=>{const t=pre.querySelector('code').textContent;try{await navigator.clipboard.writeText(t);b.textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents(pre.querySelector('code'));const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected — press Ctrl+C';}};pre.prepend(b);});
+</script></body></html>

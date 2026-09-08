@@ -1,0 +1,39 @@
+{
+  "build_host": "macOS",
+  "stm32_core": "2.12.0",
+  "compiler": "xpack-arm-none-eabi-gcc 14.2.1-1.1",
+  "fqbn": "STMicroelectronics:stm32:Nucleo_64:pnum=NUCLEO_U385RG_Q,xserial=generic,usb=none,xusb=FS,opt=osstd,dbg=none,rtlib=nano,upload_method=swdMethod",
+  "hardware_tested": false,
+  "files": [
+    {
+      "path": "imu_i3c_connectivity_5/build_opt.h",
+      "sha256": "b8ac71182d9d4cf65da10b76bc307a966085bfa372ce0afe6a2d1c07d2bc93cf",
+      "bytes": 25
+    },
+    {
+      "path": "imu_i3c_connectivity_5/imu_i3c_connectivity_5.ino",
+      "sha256": "b178d9cd8cafa0e9ac76bff6ed8513163dfa00376a18ccc3c9a8b58f1226b882",
+      "bytes": 12700
+    },
+    {
+      "path": "imu_i3c_xyz_sflp/build_opt.h",
+      "sha256": "b8ac71182d9d4cf65da10b76bc307a966085bfa372ce0afe6a2d1c07d2bc93cf",
+      "bytes": 25
+    },
+    {
+      "path": "imu_i3c_xyz_sflp/imu_i3c_xyz_sflp.ino",
+      "sha256": "17bc4388a1317e82e9c76cf1af8a3ca2106c797eb8d88f613a049313c3c5d565",
+      "bytes": 26760
+    },
+    {
+      "path": "prebuilt/connectivity.bin",
+      "sha256": "d3a36549fe1c1b729c5004a026c2016c470c26d0976101446a725cd7b9f4e235",
+      "bytes": 25380
+    },
+    {
+      "path": "prebuilt/streaming.bin",
+      "sha256": "121fecafd42d958eaf2b8117c8d1e2587027d89eb5966b3b5870208418f8cbd7",
+      "bytes": 27908
+    }
+  ]
+}

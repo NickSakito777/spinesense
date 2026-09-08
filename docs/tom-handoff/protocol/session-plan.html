@@ -1,0 +1,276 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rehearsal and formal session plan</title><style>
+:root { color-scheme:light; font:17px/1.65 system-ui,Segoe UI,sans-serif; color:#183044; background:#eef2f5; }
+body{margin:0}main{max-width:980px;margin:24px auto;padding:36px 48px;background:white;border-radius:12px}
+h1,h2,h3{line-height:1.25;color:#102638;scroll-margin-top:20px}h1{font-size:2rem}h2{margin-top:2.4rem;border-top:1px solid #dce4e9;padding-top:1.2rem}
+a{color:#075bb5;text-underline-offset:3px}table{border-collapse:collapse;display:block;overflow-x:auto;margin:1.3rem 0;font-size:.92rem}td,th{border:1px solid #cbd7df;padding:10px 13px;vertical-align:top}th{background:#eff5fa;text-align:left}
+pre{position:relative;background:#102638;color:#f0f6fc;border-radius:8px;padding:18px;overflow:auto;line-height:1.5;font-size:.84rem;white-space:pre-wrap;overflow-wrap:anywhere}code{font-family:Consolas,monospace}p code,li code,td code{background:#eef2f6;border-radius:3px;padding:2px 4px;overflow-wrap:anywhere}
+blockquote{border-left:4px solid #e6a234;margin:18px 0;padding:6px 20px;background:#fff8e8}img{max-width:100%;height:auto}.meta{font-size:.82rem;color:#526577;border-bottom:1px solid #dce4e9;padding-bottom:16px}button{cursor:pointer;padding:5px 10px;border:1px solid #bacad5;border-radius:4px;background:#f4f8fc;color:#16354a}pre button{float:right;margin-left:12px}li{margin:.35rem 0}
+@media(max-width:700px){main{margin:0;padding:22px 18px;border-radius:0}h1{font-size:1.65rem}}
+@media print{ :root{font-size:10pt;background:white} main{padding:0;margin:0;max-width:none} button{display:none} pre{background:#f1f4f7;color:#102638;break-inside:avoid} tr,img{break-inside:avoid}h1,h2,h3{break-after:avoid}a{color:inherit} }
+</style></head><body><main><div class="meta">SpineSense · Acquisition tutorial · Offline guide &nbsp; <button onclick="window.print()">Print / Save PDF</button> &nbsp; <a href="session-plan.md">Markdown source</a></div><h1 id="rehearsal-and-formal-session-plan">Rehearsal and formal session plan</h1>
+<p>Use this procedure after the repaired garment passes <code>hardware-acceptance.md</code>.
+One session directory is one physical donning and one round. The target is 4–6
+participants, each completing one 60-bout round, plus at least one true
+remove-and-redon round.</p>
+<h2 id="movement-set-and-ordinary-instructions">Movement set and ordinary instructions</h2>
+<p>The six cue names are: flexion, extension, left bend, right bend, left twist and
+right twist. The operator may demonstrate the six names before capture if that
+is part of the locally approved procedure, but must not coach a particular angle
+or claim a clinical range.</p>
+<p>Tell the participant before the round:</p>
+<blockquote>
+<p>There will be six types of trunk movement. For each bout, wait while I read
+the next movement, begin when the screen says GO, make one smooth movement
+within a range that feels comfortable and controlled, then return to your
+neutral standing position when prompted. You can make the movement smaller or
+stop at any time. Tell me immediately if you feel discomfort, pain, dizziness
+or unsteadiness.</p>
+</blockquote>
+<p>If the participant stops or reports one of those problems, end the movement and
+follow the locally approved participant procedure. Do not ask them to continue
+for the sake of completing a file.</p>
+<h2 id="fixed-seeds">Fixed seeds</h2>
+<table>
+<thead>
+<tr>
+<th>Participant</th>
+<th style="text-align:right">Round 1</th>
+<th style="text-align:right">Redon round 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SOT01</td>
+<td style="text-align:right">101</td>
+<td style="text-align:right">102</td>
+</tr>
+<tr>
+<td>SOT02</td>
+<td style="text-align:right">201</td>
+<td style="text-align:right">202</td>
+</tr>
+<tr>
+<td>SOT03</td>
+<td style="text-align:right">301</td>
+<td style="text-align:right">302</td>
+</tr>
+<tr>
+<td>SOT04</td>
+<td style="text-align:right">401</td>
+<td style="text-align:right">402</td>
+</tr>
+<tr>
+<td>SOT05</td>
+<td style="text-align:right">501</td>
+<td style="text-align:right">502</td>
+</tr>
+<tr>
+<td>SOT06</td>
+<td style="text-align:right">601</td>
+<td style="text-align:right">602</td>
+</tr>
+</tbody>
+</table>
+<p>The sequence is saved in <code>cue_run.json</code>. If a wrong seed is used, preserve the
+session and record it; do not rename or edit the cue files. Never reuse an old
+session directory.</p>
+<h2 id="mandatory-rehearsal-before-the-first-participant">Mandatory rehearsal before the first participant</h2>
+<p>Use a team member or a garment stand-in. This is a complete short run, including
+photos, mapping and taps. It verifies the operator, disk, serial data, receipt
+timestamps, cues and QC together.</p>
+<ol>
+<li>
+<p>Flash the streaming firmware and close Arduino Serial Monitor.</p>
+</li>
+<li>
+<p>Create the directory:</p>
+<pre><code class="language-powershell">Set-Location C:\SpineSense\tom
+.\.venv\Scripts\python.exe tools\session.py create --subject CHECK --round 0 --root data
+</code></pre>
+</li>
+<li>
+<p>Copy the printed path. Fill <code>placement.csv</code> and <code>notes.txt</code>, and put at least
+front/back placement images in <code>photos</code>.</p>
+</li>
+<li>
+<p>Run the tap calibration procedure below.</p>
+</li>
+<li>
+<p>Open two PowerShell windows. Start <code>--kind imu</code> in Window A. After it prints
+<code>RECORDING</code>, run cues in Window B with only two repetitions:</p>
+<pre><code class="language-powershell">.\.venv\Scripts\python.exe tools\session.py cues --session &quot;PASTE_SESSION_PATH&quot; --reps 2 --seed 100
+</code></pre>
+</li>
+<li>
+<p>Read every displayed <code>NEXT</code> cue aloud. After <code>COMPLETE</code>, wait about two
+seconds, stop capture with Ctrl+C, then run:</p>
+<pre><code class="language-powershell">.\.venv\Scripts\python.exe tools\session.py check --session &quot;PASTE_SESSION_PATH&quot;
+</code></pre>
+</li>
+<li>
+<p>Require no <code>BLOCKED</code> result. Manually review every QC warning, photos,
+placement and taps, then record <code>REHEARSAL ACCEPTED</code>, reviewer initials and
+date in notes. If anything failed, use the troubleshooting guide and repeat
+the whole rehearsal in a newly created <code>CHECK</code> directory.</p>
+</li>
+</ol>
+<p>Do not start participant sessions until the rehearsal is accepted.</p>
+<h2 id="formal-round-preparation">Formal round: preparation</h2>
+<ol>
+<li>
+<p>Confirm the day's three stationary and three gentle-flex connectivity scans
+were all <code>ALL_PASS</code>; then reflash streaming firmware and close Serial Monitor.</p>
+</li>
+<li>
+<p>Confirm the PC is connected to mains power, automatic sleep is disabled for
+the session, local disk space is available, and an approved backup location
+is ready.</p>
+</li>
+<li>
+<p>Confirm no names or identifying details will be entered. Allocate the next
+unused code <code>SOT01</code>–<code>SOT06</code>.</p>
+</li>
+<li>
+<p>Ask the participant to put on the garment according to the team's established
+garment procedure. Route and strain-relieve the cable so it cannot pull the
+repaired connector during comfortable movement.</p>
+</li>
+<li>
+<p>Create the round directory. Example for SOT01 round 1:</p>
+<pre><code class="language-powershell">.\.venv\Scripts\python.exe tools\session.py create --subject SOT01 --round 1 --root data
+</code></pre>
+</li>
+<li>
+<p>Copy the printed absolute path into the paper checklist. Use only this path
+for the rest of the round.</p>
+</li>
+<li>
+<p>Take and save fresh, face-free photos for this donning: front, back and a
+close-up of each of the five sensor positions.</p>
+</li>
+<li>
+<p>Leave <code>placement.csv</code> blank unless the identity mapping is already supported
+by this donning's evidence. It will be completed after the ordered taps.</p>
+</li>
+<li>
+<p>Fill the header fields in <code>notes.txt</code>.</p>
+</li>
+</ol>
+<h2 id="tap-calibration-for-every-donning">Tap calibration for every donning</h2>
+<p>Tap calibration is independent evidence for the mapping. It must be recorded
+for every round, including redon round 2.</p>
+<ol>
+<li>
+<p>Confirm Serial Monitor is closed.</p>
+</li>
+<li>
+<p>Start tap capture in PowerShell:</p>
+<pre><code class="language-powershell">.\.venv\Scripts\python.exe tools\session.py capture --session &quot;PASTE_SESSION_PATH&quot; --serial COM3 --kind tap
+</code></pre>
+</li>
+<li>
+<p>Wait for <code>RECORDING</code>. Tap each physical sensor <strong>three times</strong>, leaving about
+two seconds between taps, in this fixed order:</p>
+<pre><code class="language-text">sacrum -&gt; lower back -&gt; mid back -&gt; upper back -&gt; sternum
+</code></pre>
+</li>
+<li>
+<p>Leave about two seconds while changing to the next sensor so groups remain
+distinct. The procedure normally takes about 30–40 seconds; completeness and
+clear separation matter more than an exact total duration.</p>
+</li>
+<li>
+<p>Press Ctrl+C once and wait for the capture summary. Record any missed,
+accidental or extra tap in <code>notes.txt</code>. If the recording is unusable, preserve
+the directory and create a new session for the whole round.</p>
+</li>
+<li>
+<p>Generate the offline tap review:</p>
+<pre><code class="language-powershell">.\.venv\Scripts\python.exe tools\review_taps.py --session &quot;PASTE_SESSION_PATH&quot;
+</code></pre>
+</li>
+<li>
+<p>Double-click the new <code>tap_review_*.html</code>. Compare the five plotted traces
+against the known physical order of the five tap groups. Use that evidence to
+complete IMU0–IMU4 in <code>placement.csv</code>, using each allowed body position
+exactly once. The page does not assign the map or pass it automatically. If
+the groups are not clear enough to identify every sensor, do not guess;
+preserve the session and repeat in a new directory.</p>
+</li>
+</ol>
+<h2 id="formal-60-bout-capture">Formal 60-bout capture</h2>
+<ol>
+<li>
+<p>Open two PowerShell windows in <code>C:\SpineSense\tom</code>.</p>
+</li>
+<li>
+<p>In Window A start IMU capture, replacing the path and COM port:</p>
+<pre><code class="language-powershell">.\.venv\Scripts\python.exe tools\session.py capture --session &quot;PASTE_SESSION_PATH&quot; --serial COM3 --kind imu
+</code></pre>
+</li>
+<li>
+<p>Wait for <code>RECORDING</code> and watch at least one live sensor-count update. All five
+sensor names must be increasing. If any is absent, stop and troubleshoot.</p>
+</li>
+<li>
+<p>Position the participant in a safe space for the locally approved session.
+Give the ordinary instructions above.</p>
+</li>
+<li>
+<p>In Window B run the participant's round-1 seed. Example:</p>
+<pre><code class="language-powershell">.\.venv\Scripts\python.exe tools\session.py cues --session &quot;PASTE_SESSION_PATH&quot; --reps 10 --seed 101
+</code></pre>
+</li>
+<li>
+<p>Immediately read each displayed <code>NEXT</code> movement aloud. The participant waits
+for <code>GO</code>. The program controls the full cadence and the 8-second neutral
+periods; do not add a separate manual countdown.</p>
+</li>
+<li>
+<p>Observe without changing the randomized order. Record any wrong, incomplete
+or interrupted bout by number in notes.</p>
+</li>
+<li>
+<p>When Window B prints <code>COMPLETE</code>, the final 8-second neutral interval has
+finished. Wait about two seconds, then press Ctrl+C once in Window A. Wait for
+its saved summary.</p>
+</li>
+<li>
+<p>Run QC:</p>
+<pre><code class="language-powershell">.\.venv\Scripts\python.exe tools\session.py check --session &quot;PASTE_SESSION_PATH&quot;
+$LASTEXITCODE
+</code></pre>
+</li>
+<li>
+<p>A <code>BLOCKED</code> result or exit code 2 is not accepted. Keep the folder and decide
+whether to repeat after correcting the cause. <code>REVIEW_REQUIRED</code>/exit code 1
+means inspect every warning plus mapping, photos, tap pattern, participant
+performance and notes. Sign <code>ACCEPT FOR RETURN</code> or <code>REJECT/REPEAT</code> in notes.</p>
+</li>
+<li>
+<p>Copy the complete session directory to the approved second location before
+starting another participant. Compare the source and copied directory sizes.</p>
+</li>
+</ol>
+<p>One formal round takes about 10 minutes of cue time plus setup, tap calibration,
+review and backup.</p>
+<h2 id="true-remove-and-redon-round">True remove-and-redon round</h2>
+<p>At least one participant completes round 2. Do it only after all available
+participants have round 1, unless scheduling requires otherwise.</p>
+<ol>
+<li>Finish, QC and back up round 1.</li>
+<li>Disconnect safely and have the participant completely remove the garment.</li>
+<li>Put the garment on again as a new donning. A power cycle or connector reseat
+while the garment remains on does not count.</li>
+<li>Create a new session with <code>--round 2</code>. Take new photos, rebuild
+<code>placement.csv</code>, complete new notes and record a new tap calibration.</li>
+<li>Run the same 60-bout procedure using that participant's round-2 seed.</li>
+<li>QC and back up the new directory independently.</li>
+</ol>
+<p>If time is limited, prioritize round 1 across participants while retaining at
+least one real remove-and-redon round. Never shorten a formal round by changing
+the six movements or ten repetitions without recording it as a protocol
+deviation.</p>
+</main><script>
+document.querySelectorAll('pre').forEach(pre=>{const b=document.createElement('button');b.textContent='Copy';b.onclick=async()=>{const t=pre.querySelector('code').textContent;try{await navigator.clipboard.writeText(t);b.textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents(pre.querySelector('code'));const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected — press Ctrl+C';}};pre.prepend(b);});
+</script></body></html>

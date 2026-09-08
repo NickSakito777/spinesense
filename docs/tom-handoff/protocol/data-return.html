@@ -1,0 +1,115 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check, back up and return the data</title><style>
+:root { color-scheme:light; font:17px/1.65 system-ui,Segoe UI,sans-serif; color:#183044; background:#eef2f5; }
+body{margin:0}main{max-width:980px;margin:24px auto;padding:36px 48px;background:white;border-radius:12px}
+h1,h2,h3{line-height:1.25;color:#102638;scroll-margin-top:20px}h1{font-size:2rem}h2{margin-top:2.4rem;border-top:1px solid #dce4e9;padding-top:1.2rem}
+a{color:#075bb5;text-underline-offset:3px}table{border-collapse:collapse;display:block;overflow-x:auto;margin:1.3rem 0;font-size:.92rem}td,th{border:1px solid #cbd7df;padding:10px 13px;vertical-align:top}th{background:#eff5fa;text-align:left}
+pre{position:relative;background:#102638;color:#f0f6fc;border-radius:8px;padding:18px;overflow:auto;line-height:1.5;font-size:.84rem;white-space:pre-wrap;overflow-wrap:anywhere}code{font-family:Consolas,monospace}p code,li code,td code{background:#eef2f6;border-radius:3px;padding:2px 4px;overflow-wrap:anywhere}
+blockquote{border-left:4px solid #e6a234;margin:18px 0;padding:6px 20px;background:#fff8e8}img{max-width:100%;height:auto}.meta{font-size:.82rem;color:#526577;border-bottom:1px solid #dce4e9;padding-bottom:16px}button{cursor:pointer;padding:5px 10px;border:1px solid #bacad5;border-radius:4px;background:#f4f8fc;color:#16354a}pre button{float:right;margin-left:12px}li{margin:.35rem 0}
+@media(max-width:700px){main{margin:0;padding:22px 18px;border-radius:0}h1{font-size:1.65rem}}
+@media print{ :root{font-size:10pt;background:white} main{padding:0;margin:0;max-width:none} button{display:none} pre{background:#f1f4f7;color:#102638;break-inside:avoid} tr,img{break-inside:avoid}h1,h2,h3{break-after:avoid}a{color:inherit} }
+</style></head><body><main><div class="meta">SpineSense · Acquisition tutorial · Offline guide &nbsp; <button onclick="window.print()">Print / Save PDF</button> &nbsp; <a href="data-return.md">Markdown source</a></div><h1 id="check-back-up-and-return-the-data">Check, back up and return the data</h1>
+<p>Return every attempt, including rehearsal, blocked and repeated sessions. UCL
+needs the evidence of what happened and the tools never overwrite an earlier
+attempt.</p>
+<h2 id="end-of-round-review">End-of-round review</h2>
+<p>For each session directory, confirm all of these exist and are non-empty:</p>
+<ul>
+<li><code>session.json</code>, <code>placement.csv</code>, <code>notes.txt</code> and <code>photos\</code>;</li>
+<li><code>tap.log</code>, <code>tap_timing.csv</code>, <code>tap_capture.json</code>;</li>
+<li>at least one <code>tap_review_*.html</code> used for the manual mapping check;</li>
+<li><code>imu.log</code>, <code>imu_timing.csv</code>, <code>imu_capture.json</code>;</li>
+<li><code>cues.csv</code>, <code>cue_run.json</code>;</li>
+<li>at least one <code>qc_*.json</code> report.</li>
+</ul>
+<p>Open the latest QC report in Notepad and compare it with the console result.
+<code>BLOCKED</code> is retained and reported as blocked. <code>REVIEW_REQUIRED</code> still needs a
+human decision recorded in notes; it does not mean the data are scientifically
+approved.</p>
+<p>Check the human evidence:</p>
+<ul>
+<li><code>placement.csv</code> contains IMU0–IMU4 and all five body positions exactly once;</li>
+<li>photos belong to this donning and show front, back and each sensor position
+without a face;</li>
+<li>the tap groups follow sacrum, lower back, mid back, upper back, sternum;</li>
+<li>notes identify any recovery, read failure, interruption, wrong bout, repeat or
+deviation using the participant code and bout number;</li>
+<li>the cue run is complete and contains six movements × ten repetitions for a
+formal round;</li>
+<li>all five sensors cover the complete cue interval according to QC.</li>
+</ul>
+<p>Do not edit generated CSV/JSON/log files to make a check pass. If a form needs a
+correction, preserve the mistaken value in notes and make the factual correction
+in the form before running a new QC report.</p>
+<h2 id="immediate-backup">Immediate backup</h2>
+<p>After every round, copy the whole unique session directory to the approved
+second drive or institutional storage folder. Do this before the next
+participant. Do not rely on a sync icon alone: open the destination and compare
+the source and destination directory item counts and sizes.</p>
+<p>Keep collection on the local PC while recording. A network or cloud folder may
+pause, lock or delay rapidly updated timing files.</p>
+<h2 id="privacy-check">Privacy check</h2>
+<p>Before packaging:</p>
+<ul>
+<li>search filenames, notes and forms for participant names or other identifying
+details and remove them from the return copy in accordance with the approved
+project procedure;</li>
+<li>confirm participant codes are <code>SOT01</code>–<code>SOT06</code>;</li>
+<li>confirm faces and identifying backgrounds are excluded from photos;</li>
+<li>do not put participant data in this source repository;</li>
+<li>use only the Southampton/UCL approved storage and transfer route.</li>
+</ul>
+<p>Do not upload through a public file-sharing link. This guide does not send any
+files automatically.</p>
+<h2 id="expected-return-tree">Expected return tree</h2>
+<p>Exact session directory timestamps and suffixes will differ:</p>
+<pre><code class="language-text">data\
+  hardware_acceptance_2026-09-08.txt
+  CHECK_r0_20260908T090000Z_ab12cd34\
+    session.json
+    placement.csv
+    notes.txt
+    photos\...
+    tap.log
+    tap_timing.csv
+    tap_capture.json
+    tap_review_20260908T090500Z_1234abcd.html
+    imu.log
+    imu_timing.csv
+    imu_capture.json
+    cues.csv
+    cue_run.json
+    qc_20260908T091000Z_1234abcd.json
+  SOT01_r1_20260908T100000Z_...
+  SOT01_r2_20260908T150000Z_...
+  SOT02_r1_...
+</code></pre>
+<p>Include any extra failed-attempt directories and explain their relationship in
+their notes. Include the hardware acceptance record and the final confirmed
+garment connector-map record/photo if it is approved for return.</p>
+<h2 id="create-and-verify-the-zip-offline">Create and verify the ZIP offline</h2>
+<p>Close every capture/Arduino window first. In File Explorer, right-click the
+<code>data</code> folder and choose <strong>Compress to ZIP file</strong> (or <strong>Send to &gt; Compressed
+(zipped) folder</strong>, depending on Windows version). Name it with the collection
+date, for example <code>Southampton_SpineSense_data_2026-09-08.zip</code>.</p>
+<p>Open the ZIP in File Explorer without extracting it. Browse into at least the
+rehearsal, one formal round and the redon round; confirm that photos, raw logs,
+timing CSVs, cues and QC reports are visible. Compare the ZIP size with the data
+folder and retain both the original and the separate backup until UCL confirms
+receipt and readability through the approved project channel.</p>
+<p>Alongside the ZIP, provide this plain-text manifest:</p>
+<pre><code class="language-text">Collection dates:
+Operator(s):
+Hardware acceptance filename and result:
+Rehearsal session path and review decision:
+Formal round directories:
+Blocked/failed/repeated directories and reasons:
+Participant codes with round 1:
+Participant code(s) with true remove-and-redon round 2:
+Known hardware or timing issues:
+ZIP filename:
+ZIP size:
+Backup location checked by/date:
+</code></pre>
+</main><script>
+document.querySelectorAll('pre').forEach(pre=>{const b=document.createElement('button');b.textContent='Copy';b.onclick=async()=>{const t=pre.querySelector('code').textContent;try{await navigator.clipboard.writeText(t);b.textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents(pre.querySelector('code'));const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected — press Ctrl+C';}};pre.prepend(b);});
+</script></body></html>

@@ -1,0 +1,196 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SpineSense repaired-garment test and data-collection kit</title><style>
+:root { color-scheme:light; font:17px/1.65 system-ui,Segoe UI,sans-serif; color:#183044; background:#eef2f5; }
+body{margin:0}main{max-width:980px;margin:24px auto;padding:36px 48px;background:white;border-radius:12px}
+h1,h2,h3{line-height:1.25;color:#102638;scroll-margin-top:20px}h1{font-size:2rem}h2{margin-top:2.4rem;border-top:1px solid #dce4e9;padding-top:1.2rem}
+a{color:#075bb5;text-underline-offset:3px}table{border-collapse:collapse;display:block;overflow-x:auto;margin:1.3rem 0;font-size:.92rem}td,th{border:1px solid #cbd7df;padding:10px 13px;vertical-align:top}th{background:#eff5fa;text-align:left}
+pre{position:relative;background:#102638;color:#f0f6fc;border-radius:8px;padding:18px;overflow:auto;line-height:1.5;font-size:.84rem;white-space:pre-wrap;overflow-wrap:anywhere}code{font-family:Consolas,monospace}p code,li code,td code{background:#eef2f6;border-radius:3px;padding:2px 4px;overflow-wrap:anywhere}
+blockquote{border-left:4px solid #e6a234;margin:18px 0;padding:6px 20px;background:#fff8e8}img{max-width:100%;height:auto}.meta{font-size:.82rem;color:#526577;border-bottom:1px solid #dce4e9;padding-bottom:16px}button{cursor:pointer;padding:5px 10px;border:1px solid #bacad5;border-radius:4px;background:#f4f8fc;color:#16354a}pre button{float:right;margin-left:12px}li{margin:.35rem 0}
+@media(max-width:700px){main{margin:0;padding:22px 18px;border-radius:0}h1{font-size:1.65rem}}
+@media print{ :root{font-size:10pt;background:white} main{padding:0;margin:0;max-width:none} button{display:none} pre{background:#f1f4f7;color:#102638;break-inside:avoid} tr,img{break-inside:avoid}h1,h2,h3{break-after:avoid}a{color:inherit} }
+</style></head><body><main><div class="meta">SpineSense · Acquisition tutorial · Offline guide &nbsp; <button onclick="window.print()">Print / Save PDF</button> &nbsp; <a href="README.md">Markdown source</a></div><h1 id="spinesense-repaired-garment-test-and-data-collection-kit">SpineSense repaired-garment test and data-collection kit</h1>
+<p>This acquisition package is for the Southampton team to test the repaired five-IMU
+garment and collect IMU-only movement data without live support from UCL. Start
+here, then follow the linked pages in order. Do not add participant data to a
+Git repository.</p>
+<p>On Windows, double-click <code>README.html</code> for the easiest browser view of this
+guide. The <code>.md</code> files contain the same instructions.</p>
+<h2 id="download-from-github">Download from GitHub</h2>
+<ol>
+<li>On the repository homepage, select <strong>Code &gt; Download ZIP</strong>.</li>
+<li>In File Explorer, right-click the downloaded ZIP and choose <strong>Extract All</strong>.</li>
+<li>Open the extracted repository, then <code>docs</code>, then <code>tom-handoff</code>. Copy the entire <code>tom-handoff</code> folder to <code>C:\SpineSense</code> and rename that copy to <code>tom</code>.</li>
+<li>Confirm this file is now <code>C:\SpineSense\tom\README.md</code>. Open <code>README.html</code> in your browser for the offline tutorial, or read this Markdown version on GitHub.</li>
+<li>Follow BUILD.md first. The included <code>wheelhouse</code> supplies the Python acquisition dependency; Python, Arduino IDE and STM32CubeProgrammer still require their documented installers.</li>
+</ol>
+<p>Use the firmware inside this folder with its matching wiring table. The repository's older top-level firmware and README describe a different development snapshot. This kit contains no participant recordings or trained classification model. Never commit the generated <code>data</code> directory, photos or session records to GitHub.</p>
+<h2 id="what-a-successful-handoff-contains">What a successful handoff contains</h2>
+<p>The target is:</p>
+<ul>
+<li>a hardware acceptance record showing that all five sensors stayed connected;</li>
+<li>one short rehearsal session, checked before any participant session;</li>
+<li>one formal round from each of 4–6 coded participants;</li>
+<li>at least one additional round after that participant completely removes and
+puts the garment on again;</li>
+<li>photos, placement mapping, tap calibration, notes, raw timestamped serial data,
+cue timestamps and a QC report for every donning/round.</li>
+</ul>
+<p>There is no motion-capture step. The package does not train or score a model.
+UCL performs all later processing.</p>
+<h2 id="read-and-run-in-this-order">Read and run in this order</h2>
+<ol>
+<li><a href="BUILD.html">BUILD.md</a> — install the Windows software, identify the board and
+COM port, check the wiring, and flash the two supplied firmware sketches.</li>
+<li><a href="docs/hardware-acceptance.html">docs/hardware-acceptance.md</a> — test the repair
+and approve or reject the garment for human data collection.</li>
+<li><a href="docs/operator-guide.html">docs/operator-guide.md</a> — create the Python
+environment and learn the five commands used during collection.</li>
+<li><a href="protocol/session-plan.html">protocol/session-plan.md</a> — run the rehearsal and
+formal participant rounds.</li>
+<li><a href="docs/troubleshooting.html">docs/troubleshooting.md</a> — use this decision tree
+whenever a step fails.</li>
+<li><a href="protocol/data-return.html">protocol/data-return.md</a> — check, copy and package
+the data for offline return.</li>
+</ol>
+<p>Print <a href="docs/print-checklist.html">docs/print-checklist.md</a> for the collection desk.
+Copy the fillable text in <a href="docs/forms.html">docs/forms.md</a> when a form needs to be
+restored.</p>
+<h2 id="package-map">Package map</h2>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>firmware/imu_i3c_connectivity_5/</code></td>
+<td>Five-sensor connection test at 115200 baud</td>
+</tr>
+<tr>
+<td><code>firmware/imu_i3c_xyz_sflp/</code></td>
+<td>Five-sensor stream at 921600 baud with automatic bus recovery</td>
+</tr>
+<tr>
+<td><code>tools/session.py</code></td>
+<td>Creates sessions, finds ports, captures data, presents cues and checks results</td>
+</tr>
+<tr>
+<td><code>tools/review_taps.py</code></td>
+<td>Makes an offline tap-trace page for manual mapping review</td>
+</tr>
+<tr>
+<td><code>BUILD.md</code></td>
+<td>Windows installation, wiring and firmware flashing</td>
+</tr>
+<tr>
+<td><code>docs/hardware-acceptance.md</code></td>
+<td>Repaired-garment acceptance procedure</td>
+</tr>
+<tr>
+<td><code>docs/operator-guide.md</code></td>
+<td>Beginner command guide and expected files</td>
+</tr>
+<tr>
+<td><code>docs/troubleshooting.md</code></td>
+<td>Stop/retry/continue decision tree</td>
+</tr>
+<tr>
+<td><code>docs/print-checklist.md</code></td>
+<td>Short printable desk checklist</td>
+</tr>
+<tr>
+<td><code>docs/forms.md</code></td>
+<td>Replacement placement and notes templates</td>
+</tr>
+<tr>
+<td><code>protocol/session-plan.md</code></td>
+<td>Rehearsal and formal collection procedure</td>
+</tr>
+<tr>
+<td><code>protocol/data-return.md</code></td>
+<td>QC, backup, privacy and return instructions</td>
+</tr>
+</tbody>
+</table>
+<h2 id="fixed-hardware-facts-for-this-package">Fixed hardware facts for this package</h2>
+<p>The controller is a <strong>NUCLEO-U385RG-Q</strong>. The supplied firmware uses the board's
+ST-LINK virtual COM port (USART1), not native USB CDC. The serial speeds are
+115200 for the connectivity sketch and 921600 for the streaming sketch.</p>
+<p>The Nucleo-side wiring used by both supplied sketches is:</p>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Nucleo Arduino header</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCL</td>
+<td>D15 / PB13</td>
+</tr>
+<tr>
+<td>SDA</td>
+<td>D14 / PB14</td>
+</tr>
+<tr>
+<td>VDD and VDDIO</td>
+<td>3V3</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>CS for all sensors</td>
+<td>3V3 (high for I3C mode)</td>
+</tr>
+<tr>
+<td>IMU0 TA0</td>
+<td>D2 / PC8</td>
+</tr>
+<tr>
+<td>IMU1 TA0</td>
+<td>D4 / PB5</td>
+</tr>
+<tr>
+<td>IMU2 TA0</td>
+<td><strong>D6 / PB10</strong></td>
+</tr>
+<tr>
+<td>IMU3 TA0</td>
+<td>D8 / PC7</td>
+</tr>
+<tr>
+<td>IMU4 TA0</td>
+<td>D9 / PC6</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Do not infer the garment connector's 2×5 hole numbering from this table.</strong>
+The repaired garment's connector-to-signal map must come from Southampton's
+confirmed repair/pinout record. Verify that map before applying power. D6 is
+intentional; the earlier D7 route was suspected damaged.</p>
+<h2 id="safety-and-data-boundaries">Safety and data boundaries</h2>
+<ul>
+<li>Use only a garment that has passed the hardware acceptance procedure.</li>
+<li>Ask each participant to move only within a range that feels comfortable and
+controlled. They may make a smaller movement or stop at any time. Stop the
+round if they report discomfort, pain, dizziness or unsteadiness. This guide
+does not define clinical range of motion or participant eligibility.</li>
+<li>Use participant codes <code>SOT01</code>–<code>SOT06</code>, never names or identifying details, in
+filenames, forms and notes.</li>
+<li>Frame garment-position photos to exclude the face and any identifying items.</li>
+<li>Keep data in the approved project storage locations used by the Southampton
+and UCL teams. Do not use public repositories or public links.</li>
+</ul>
+<h2 id="evidence-status">Evidence status</h2>
+<p>The firmware contains field patches written for STM32 Arduino core 2.12.0:
+slower address assignment, retries and automatic recovery after transient bus
+loss. Software-only tests can verify the host tools and file rules. Only the
+Southampton team can mark the repaired garment, Windows PC, COM-port capture and
+real participant runs as passed; the supplied forms keep those results explicit.</p>
+</main><script>
+document.querySelectorAll('pre').forEach(pre=>{const b=document.createElement('button');b.textContent='Copy';b.onclick=async()=>{const t=pre.querySelector('code').textContent;try{await navigator.clipboard.writeText(t);b.textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents(pre.querySelector('code'));const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected — press Ctrl+C';}};pre.prepend(b);});
+</script></body></html>

@@ -1,0 +1,135 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Operator command guide</title><style>
+:root { color-scheme:light; font:17px/1.65 system-ui,Segoe UI,sans-serif; color:#183044; background:#eef2f5; }
+body{margin:0}main{max-width:980px;margin:24px auto;padding:36px 48px;background:white;border-radius:12px}
+h1,h2,h3{line-height:1.25;color:#102638;scroll-margin-top:20px}h1{font-size:2rem}h2{margin-top:2.4rem;border-top:1px solid #dce4e9;padding-top:1.2rem}
+a{color:#075bb5;text-underline-offset:3px}table{border-collapse:collapse;display:block;overflow-x:auto;margin:1.3rem 0;font-size:.92rem}td,th{border:1px solid #cbd7df;padding:10px 13px;vertical-align:top}th{background:#eff5fa;text-align:left}
+pre{position:relative;background:#102638;color:#f0f6fc;border-radius:8px;padding:18px;overflow:auto;line-height:1.5;font-size:.84rem;white-space:pre-wrap;overflow-wrap:anywhere}code{font-family:Consolas,monospace}p code,li code,td code{background:#eef2f6;border-radius:3px;padding:2px 4px;overflow-wrap:anywhere}
+blockquote{border-left:4px solid #e6a234;margin:18px 0;padding:6px 20px;background:#fff8e8}img{max-width:100%;height:auto}.meta{font-size:.82rem;color:#526577;border-bottom:1px solid #dce4e9;padding-bottom:16px}button{cursor:pointer;padding:5px 10px;border:1px solid #bacad5;border-radius:4px;background:#f4f8fc;color:#16354a}pre button{float:right;margin-left:12px}li{margin:.35rem 0}
+@media(max-width:700px){main{margin:0;padding:22px 18px;border-radius:0}h1{font-size:1.65rem}}
+@media print{ :root{font-size:10pt;background:white} main{padding:0;margin:0;max-width:none} button{display:none} pre{background:#f1f4f7;color:#102638;break-inside:avoid} tr,img{break-inside:avoid}h1,h2,h3{break-after:avoid}a{color:inherit} }
+</style></head><body><main><div class="meta">SpineSense · Acquisition tutorial · Offline guide &nbsp; <button onclick="window.print()">Print / Save PDF</button> &nbsp; <a href="operator-guide.md">Markdown source</a></div><h1 id="operator-command-guide">Operator command guide</h1>
+<p>All commands below are run from <code>C:\SpineSense\tom</code> in Windows PowerShell. If
+you extracted the package elsewhere, replace that path. Do not double-click the
+Python file and do not activate the virtual environment.</p>
+<h2 id="the-six-operations">The six operations</h2>
+<pre><code class="language-powershell">Set-Location C:\SpineSense\tom
+
+# 1. Find serial ports
+.\.venv\Scripts\python.exe tools\session.py ports
+
+# 2. Create one new, non-overwriting directory for one donning/round
+.\.venv\Scripts\python.exe tools\session.py create --subject SOT01 --round 1 --root data
+
+# 3. Capture either the tap calibration or the formal IMU stream
+.\.venv\Scripts\python.exe tools\session.py capture --session &quot;PASTE_SESSION_PATH&quot; --serial COM3 --kind tap
+.\.venv\Scripts\python.exe tools\session.py capture --session &quot;PASTE_SESSION_PATH&quot; --serial COM3 --kind imu
+
+# 4. Make the offline page for manual tap-to-IMU mapping
+.\.venv\Scripts\python.exe tools\review_taps.py --session &quot;PASTE_SESSION_PATH&quot;
+
+# 5. Present the timed movement cues
+.\.venv\Scripts\python.exe tools\session.py cues --session &quot;PASTE_SESSION_PATH&quot; --reps 10 --seed 101
+
+# 6. Create the QC report
+.\.venv\Scripts\python.exe tools\session.py check --session &quot;PASTE_SESSION_PATH&quot;
+</code></pre>
+<p>Replace <code>COM3</code> with the port printed by <code>ports</code>. <code>create</code> prints an absolute,
+unique folder such as:</p>
+<pre><code class="language-text">C:\SpineSense\tom\data\SOT01_r1_20260908T101530Z_a1b2c3d4
+</code></pre>
+<p>Copy that whole line. Paste it between quotes wherever <code>PASTE_SESSION_PATH</code>
+appears. Never type a folder name from memory.</p>
+<h2 id="what-create-makes">What <code>create</code> makes</h2>
+<p>One directory represents exactly one donning and one round. It contains:</p>
+<pre><code class="language-text">session.json
+placement.csv
+notes.txt
+photos\
+</code></pre>
+<p>Later commands add <code>tap.log</code>, <code>tap_timing.csv</code>, <code>tap_capture.json</code>, <code>imu.log</code>,
+<code>imu_timing.csv</code>, <code>imu_capture.json</code>, <code>cues.csv</code>, <code>cue_run.json</code> and a uniquely
+named <code>qc_*.json</code> report. Host receive timestamps are stored for every complete
+serial line. The raw log is also preserved byte-for-byte.</p>
+<p>The tools refuse to overwrite a capture or cue run. If a round must be repeated,
+run <code>create</code> again with the same participant code and round number. The UTC time
+and random suffix make the new folder unique. Preserve the failed folder and
+explain the retry in both folders' notes.</p>
+<h2 id="prepare-and-verify-the-mapping">Prepare and verify the mapping</h2>
+<p>Open <code>placement.csv</code> in Notepad or Excel. Keep the header and sensor names. The
+generated blank file looks like:</p>
+<pre><code class="language-csv">sensor,body_position
+IMU0,
+IMU1,
+IMU2,
+IMU3,
+IMU4,
+</code></pre>
+<p>After recording the ordered tap calibration, run <code>review_taps.py</code> and use its
+five traces to match the physical tap groups to IMU0–IMU4. Then enter each of
+these labels exactly once: <code>sacrum</code>, <code>lower back</code>, <code>mid back</code>, <code>upper back</code>, and
+<code>sternum</code>. Never infer the mapping from row order and never copy a previous
+round's mapping without checking it. If the traces are ambiguous, stop and
+repeat in a new session instead of guessing. Save as CSV, not <code>.xlsx</code>.</p>
+<p><code>review_taps.py</code> saves a unique offline <code>tap_review_*.html</code> file. Exit code 1
+means manual review is required, which is the normal outcome. Exit code 2 means
+the input is blocked by missing, empty, partial or reset data. Keep the HTML and
+the original tap log/timing files in either case.</p>
+<p>Take a front garment view, a back garment view and one clear close-up of each
+sensor position. Keep faces and identifying items outside the frame. Put all
+seven or more images in this session's <code>photos</code> directory with simple names such
+as <code>front.jpg</code>, <code>back.jpg</code>, <code>sacrum.jpg</code> and <code>sternum.jpg</code>.</p>
+<p>Open <code>notes.txt</code> and fill the operator, date, firmware/build and repair fields.
+Use bout numbers to record any cue or movement issue; do not record names,
+medical histories or other identifying information.</p>
+<h2 id="two-powershell-windows-during-the-formal-run">Two PowerShell windows during the formal run</h2>
+<p>Open two PowerShell windows. In both:</p>
+<pre><code class="language-powershell">Set-Location C:\SpineSense\tom
+</code></pre>
+<p>Window A owns the COM port and writes the IMU stream. Window B presents cues.
+The cue program checks that capture is live on the same computer and refuses to
+start if the timing file is stale. Arduino Serial Monitor must be closed.</p>
+<p><strong>Window A:</strong></p>
+<pre><code class="language-powershell">.\.venv\Scripts\python.exe tools\session.py capture --session &quot;C:\SpineSense\tom\data\SOT01_r1_20260908T101530Z_a1b2c3d4&quot; --serial COM3 --kind imu
+</code></pre>
+<p>Wait until it prints <code>RECORDING</code>. Keep Window A open.</p>
+<p><strong>Window B:</strong></p>
+<pre><code class="language-powershell">.\.venv\Scripts\python.exe tools\session.py cues --session &quot;C:\SpineSense\tom\data\SOT01_r1_20260908T101530Z_a1b2c3d4&quot; --reps 10 --seed 101
+</code></pre>
+<p>The Windows beep is only an attention signal. It does not say the movement.
+The operator must immediately read every displayed <code>NEXT</code> movement aloud. The
+participant waits for <code>GO</code> before moving.</p>
+<p>The cue program automatically records 8 seconds of neutral standing before the
+first bout and 8 seconds after the last bout. After Window B prints <code>COMPLETE</code>,
+wait about two seconds, click Window A, and press <strong>Ctrl+C once</strong>. Wait for the
+capture summary; do not close the window while it is writing.</p>
+<h2 id="what-the-cue-times-mean">What the cue times mean</h2>
+<p>Each bout is:</p>
+<ul>
+<li><code>NEXT</code>, 2 seconds: operator reads the named movement; participant waits;</li>
+<li><code>GO</code>, 5 seconds: participant performs one comfortable, controlled movement;</li>
+<li><code>RETURN_NEUTRAL</code>, 3 seconds: participant returns to their neutral stance.</li>
+</ul>
+<p>The timestamps record computer prompts and serial-line receipt. They are not a
+measurement of the participant's exact movement onset and are not independent
+sensor sample times. If the MCU millisecond counter goes backwards, the tool
+starts a new timestamp segment and QC blocks the round for investigation.</p>
+<h2 id="understanding-check">Understanding <code>check</code></h2>
+<p>Run <code>check</code> only after both captures and the cues have finished. It always
+requires manual review and therefore does not print a scientific <code>PASS</code>.</p>
+<ul>
+<li><code>BLOCKED</code> / PowerShell exit code 2 means a critical input or coverage rule
+failed. Do not count the round as accepted; preserve it and use the decision
+tree.</li>
+<li><code>REVIEW_REQUIRED</code> / exit code 1 means automated structural checks completed.
+Read every warning, inspect the photos, mapping, tap pattern and notes, then
+sign the decision in <code>notes.txt</code>.</li>
+</ul>
+<p>The automated thresholds are conservative acquisition gates. They detect an
+obviously incomplete capture; they do not establish scientific validity or
+confirm that a participant performed a movement correctly.</p>
+<p>To display the exit code immediately after <code>check</code>:</p>
+<pre><code class="language-powershell">$LASTEXITCODE
+</code></pre>
+</main><script>
+document.querySelectorAll('pre').forEach(pre=>{const b=document.createElement('button');b.textContent='Copy';b.onclick=async()=>{const t=pre.querySelector('code').textContent;try{await navigator.clipboard.writeText(t);b.textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents(pre.querySelector('code'));const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected — press Ctrl+C';}};pre.prepend(b);});
+</script></body></html>

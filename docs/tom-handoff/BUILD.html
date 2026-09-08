@@ -1,0 +1,194 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Windows setup, wiring and firmware flashing</title><style>
+:root { color-scheme:light; font:17px/1.65 system-ui,Segoe UI,sans-serif; color:#183044; background:#eef2f5; }
+body{margin:0}main{max-width:980px;margin:24px auto;padding:36px 48px;background:white;border-radius:12px}
+h1,h2,h3{line-height:1.25;color:#102638;scroll-margin-top:20px}h1{font-size:2rem}h2{margin-top:2.4rem;border-top:1px solid #dce4e9;padding-top:1.2rem}
+a{color:#075bb5;text-underline-offset:3px}table{border-collapse:collapse;display:block;overflow-x:auto;margin:1.3rem 0;font-size:.92rem}td,th{border:1px solid #cbd7df;padding:10px 13px;vertical-align:top}th{background:#eff5fa;text-align:left}
+pre{position:relative;background:#102638;color:#f0f6fc;border-radius:8px;padding:18px;overflow:auto;line-height:1.5;font-size:.84rem;white-space:pre-wrap;overflow-wrap:anywhere}code{font-family:Consolas,monospace}p code,li code,td code{background:#eef2f6;border-radius:3px;padding:2px 4px;overflow-wrap:anywhere}
+blockquote{border-left:4px solid #e6a234;margin:18px 0;padding:6px 20px;background:#fff8e8}img{max-width:100%;height:auto}.meta{font-size:.82rem;color:#526577;border-bottom:1px solid #dce4e9;padding-bottom:16px}button{cursor:pointer;padding:5px 10px;border:1px solid #bacad5;border-radius:4px;background:#f4f8fc;color:#16354a}pre button{float:right;margin-left:12px}li{margin:.35rem 0}
+@media(max-width:700px){main{margin:0;padding:22px 18px;border-radius:0}h1{font-size:1.65rem}}
+@media print{ :root{font-size:10pt;background:white} main{padding:0;margin:0;max-width:none} button{display:none} pre{background:#f1f4f7;color:#102638;break-inside:avoid} tr,img{break-inside:avoid}h1,h2,h3{break-after:avoid}a{color:inherit} }
+</style></head><body><main><div class="meta">SpineSense · Acquisition tutorial · Offline guide &nbsp; <button onclick="window.print()">Print / Save PDF</button> &nbsp; <a href="BUILD.md">Markdown source</a></div><h1 id="windows-setup-wiring-and-firmware-flashing">Windows setup, wiring and firmware flashing</h1>
+<p>Complete this page once on the collection laptop. Keep the whole handoff folder
+in a short local path such as <code>C:\SpineSense\tom</code>; cloud-sync software can then
+copy the completed <code>data</code> folder, but collection itself should write to the
+local disk.</p>
+<h2 id="1-equipment">1. Equipment</h2>
+<ul>
+<li>repaired SpineSense garment with five STEVAL-MKI248KA sensor assemblies;</li>
+<li>NUCLEO-U385RG-Q and its ST-LINK USB connector;</li>
+<li>known-good USB <strong>data</strong> cable (a charge-only cable will not create a COM port);</li>
+<li>confirmed 2×5 garment connector pinout/repair record and matching adapter;</li>
+<li>Windows 10 or 11, 64 bit, with permission to install software;</li>
+<li>optionally, a multimeter and a second USB cable for fault isolation;</li>
+<li>enough free disk space for all sessions and a separate approved backup drive
+or folder.</li>
+</ul>
+<h2 id="2-install-python">2. Install Python</h2>
+<ol>
+<li>
+<p>Download the 64-bit Windows installer for
+<a href="https://www.python.org/downloads/release/python-31210/">Python 3.12.10</a>.
+The acquisition tool requires Python 3.10 or newer; this guide fixes 3.12 so
+every operator uses the same version.</p>
+</li>
+<li>
+<p>Run the installer. If it offers <strong>Add python.exe to PATH</strong>, select it.</p>
+</li>
+<li>
+<p>Open <strong>Start</strong>, type <code>PowerShell</code>, and open Windows PowerShell.</p>
+</li>
+<li>
+<p>Run:</p>
+<pre><code class="language-powershell">py -3.12 --version
+</code></pre>
+<p>A line beginning with <code>Python 3.12</code> is success. If <code>py</code> is not recognised,
+close PowerShell, reopen it, and try again. If it still fails, reinstall
+Python with the launcher/PATH option enabled. Python's official
+<a href="https://docs.python.org/3/using/windows.html">Windows documentation</a>
+describes the launcher and virtual environments.</p>
+</li>
+</ol>
+<h2 id="3-install-arduino-ide-2-and-stm32-support">3. Install Arduino IDE 2 and STM32 support</h2>
+<ol>
+<li>
+<p>Download and install Arduino IDE 2 from Arduino's official
+<a href="https://support.arduino.cc/hc/en-us/articles/360019833020-Download-and-install-Arduino-IDE">Windows installation page</a>.</p>
+</li>
+<li>
+<p>Download and install STM32CubeProgrammer for Windows from the official
+<a href="https://www.st.com/en/development-tools/stm32cubeprog.html">STMicroelectronics page</a>.
+The SWD upload method uses it. Keep the default ST-LINK driver option.</p>
+</li>
+<li>
+<p>Open Arduino IDE. Choose <strong>File &gt; Preferences</strong>.</p>
+</li>
+<li>
+<p>Add this exact URL to <strong>Additional boards manager URLs</strong>:</p>
+<pre><code class="language-text">https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
+</code></pre>
+</li>
+<li>
+<p>Open <strong>Tools &gt; Board &gt; Boards Manager</strong>. Search for <code>STM32 MCU based boards</code>, choose version <strong>2.12.0</strong>, and install it. The STM32 project's
+official <a href="https://github.com/stm32duino/Arduino_Core_STM32/wiki/Getting-Started">getting-started page</a>
+documents the same board-manager route.</p>
+</li>
+</ol>
+<p>Do not substitute another STM32 core version during this handoff. Record any
+compiler error before changing versions or source files.</p>
+<h2 id="4-put-the-package-in-place-and-create-its-python-environment">4. Put the package in place and create its Python environment</h2>
+<p>Extract the handoff archive so this file is, for example,
+<code>C:\SpineSense\tom\BUILD.md</code>. In PowerShell:</p>
+<pre><code class="language-powershell">Set-Location C:\SpineSense\tom
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --no-index --find-links wheelhouse -r requirements.txt
+.\.venv\Scripts\python.exe tools\session.py --help
+</code></pre>
+<p>Always use <code>.\.venv\Scripts\python.exe</code> as shown. Activation is not required,
+so every command clearly uses the same environment. The included wheelhouse
+installs the pinned <code>pyserial==3.5</code> package without contacting the internet.</p>
+<h2 id="5-verify-the-connector-map-before-power">5. Verify the connector map before power</h2>
+<p>Disconnect USB and all power. Compare Southampton's confirmed repair/pinout
+record with the Nucleo-side table in <a href="README.html">README.md</a>. Verify at least:</p>
+<ul>
+<li>3V3 is connected only to VDD, VDDIO and CS;</li>
+<li>GND is connected only to GND;</li>
+<li>SCL goes to D15 and SDA to D14;</li>
+<li>TA0 lines go to D2, D4, <strong>D6</strong>, D8 and D9 for IMU0–IMU4;</li>
+<li>the adapter is fully seated and strain-relieved;</li>
+<li>there are no exposed conductors, obvious shorts, cracked boards or loose
+sensor modules.</li>
+</ul>
+<p>If the connector map is unavailable, ambiguous, or differs from the table,
+stop before power. Do not guess a 2×5 hole orientation. A person qualified to
+check the repair must resolve it and record the final map.</p>
+<h2 id="6-connect-the-board-and-identify-the-two-usb-functions">6. Connect the board and identify the two USB functions</h2>
+<p>Use the Nucleo's <strong>ST-LINK USB connector</strong>. Windows should expose both the
+programming/debug interface and a virtual COM port. Open Device Manager, expand
+<strong>Ports (COM &amp; LPT)</strong>, and note the new <code>STMicroelectronics STLink Virtual COM Port (COMn)</code> entry. Unplug/replug the cable if unsure which entry is new.</p>
+<p>You can also list candidate serial ports from PowerShell:</p>
+<pre><code class="language-powershell">.\.venv\Scripts\python.exe tools\session.py ports
+</code></pre>
+<p>Write the result as <code>COM___</code>. The COM number may change after using a different
+USB socket. Re-run <code>ports</code> rather than assuming the old number.</p>
+<h2 id="7-flash-the-connectivity-sketch">7. Flash the connectivity sketch</h2>
+<ol>
+<li>In Arduino IDE choose <strong>File &gt; Open</strong> and open
+<code>firmware\imu_i3c_connectivity_5\imu_i3c_connectivity_5.ino</code>.</li>
+<li>Confirm <code>build_opt.h</code> appears in the same sketch folder. Do not move it.</li>
+<li>Set the <strong>Tools</strong> menu exactly:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Required value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Board</td>
+<td>Nucleo-64</td>
+</tr>
+<tr>
+<td>Board part number</td>
+<td>NUCLEO-U385RG-Q</td>
+</tr>
+<tr>
+<td>U(S)ART support</td>
+<td>Enabled (generic <code>Serial</code>)</td>
+</tr>
+<tr>
+<td>USB support</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Optimize</td>
+<td>Smallest (<code>-Os</code> default)</td>
+</tr>
+<tr>
+<td>Debug symbols and core logs</td>
+<td>None</td>
+</tr>
+<tr>
+<td>C Runtime Library</td>
+<td>Newlib Nano (default)</td>
+</tr>
+<tr>
+<td>Upload method</td>
+<td>STM32CubeProgrammer (SWD)</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>the board's COM port, if the menu requests it</td>
+</tr>
+</tbody>
+</table>
+<ol start="4">
+<li>Click <strong>Upload</strong>. Wait for a successful completion message.</li>
+<li>Open <strong>Tools &gt; Serial Monitor</strong>, set <strong>115200 baud</strong>, and press the board's
+reset button once.</li>
+</ol>
+<p>The banner must name TA0 as D2, D4, D6, D8 and D9. Continue with
+<a href="docs/hardware-acceptance.html">docs/hardware-acceptance.md</a>. If the banner shows
+D3/D5, you opened an obsolete sketch; stop and reopen the sketch from this
+package.</p>
+<h2 id="8-flash-the-streaming-sketch">8. Flash the streaming sketch</h2>
+<p>Do this after the unpowered inspection and connectivity sections of hardware
+acceptance pass. The streaming smoke test then completes hardware acceptance:</p>
+<ol>
+<li><strong>Close the Arduino Serial Monitor.</strong> Only one program may own the COM port.</li>
+<li>Open <code>firmware\imu_i3c_xyz_sflp\imu_i3c_xyz_sflp.ino</code>.</li>
+<li>Keep the same board settings and click <strong>Upload</strong>.</li>
+<li>Do not reopen Serial Monitor during Python capture. If you inspect the stream
+manually, use <strong>921600 baud</strong>, then close Serial Monitor before continuing.</li>
+<li>Run <code>session.py ports</code> again and record the COM port.</li>
+</ol>
+<p>The streaming firmware prints tab-separated data plus diagnostic lines. Each
+valid sensor line contains board time, IMU identity, a firmware position label,
+dynamic address, acceleration, gyroscope and quaternion fields. The firmware
+position label is not proof of the garment body position; the round-specific
+placement form, photos and tap capture establish that mapping.</p>
+<p>Proceed to <a href="docs/operator-guide.html">docs/operator-guide.md</a>.</p>
+</main><script>
+document.querySelectorAll('pre').forEach(pre=>{const b=document.createElement('button');b.textContent='Copy';b.onclick=async()=>{const t=pre.querySelector('code').textContent;try{await navigator.clipboard.writeText(t);b.textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents(pre.querySelector('code'));const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected — press Ctrl+C';}};pre.prepend(b);});
+</script></body></html>

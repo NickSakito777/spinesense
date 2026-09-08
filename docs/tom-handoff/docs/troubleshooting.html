@@ -1,0 +1,91 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Troubleshooting decision tree</title><style>
+:root { color-scheme:light; font:17px/1.65 system-ui,Segoe UI,sans-serif; color:#183044; background:#eef2f5; }
+body{margin:0}main{max-width:980px;margin:24px auto;padding:36px 48px;background:white;border-radius:12px}
+h1,h2,h3{line-height:1.25;color:#102638;scroll-margin-top:20px}h1{font-size:2rem}h2{margin-top:2.4rem;border-top:1px solid #dce4e9;padding-top:1.2rem}
+a{color:#075bb5;text-underline-offset:3px}table{border-collapse:collapse;display:block;overflow-x:auto;margin:1.3rem 0;font-size:.92rem}td,th{border:1px solid #cbd7df;padding:10px 13px;vertical-align:top}th{background:#eff5fa;text-align:left}
+pre{position:relative;background:#102638;color:#f0f6fc;border-radius:8px;padding:18px;overflow:auto;line-height:1.5;font-size:.84rem;white-space:pre-wrap;overflow-wrap:anywhere}code{font-family:Consolas,monospace}p code,li code,td code{background:#eef2f6;border-radius:3px;padding:2px 4px;overflow-wrap:anywhere}
+blockquote{border-left:4px solid #e6a234;margin:18px 0;padding:6px 20px;background:#fff8e8}img{max-width:100%;height:auto}.meta{font-size:.82rem;color:#526577;border-bottom:1px solid #dce4e9;padding-bottom:16px}button{cursor:pointer;padding:5px 10px;border:1px solid #bacad5;border-radius:4px;background:#f4f8fc;color:#16354a}pre button{float:right;margin-left:12px}li{margin:.35rem 0}
+@media(max-width:700px){main{margin:0;padding:22px 18px;border-radius:0}h1{font-size:1.65rem}}
+@media print{ :root{font-size:10pt;background:white} main{padding:0;margin:0;max-width:none} button{display:none} pre{background:#f1f4f7;color:#102638;break-inside:avoid} tr,img{break-inside:avoid}h1,h2,h3{break-after:avoid}a{color:inherit} }
+</style></head><body><main><div class="meta">SpineSense · Acquisition tutorial · Offline guide &nbsp; <button onclick="window.print()">Print / Save PDF</button> &nbsp; <a href="troubleshooting.md">Markdown source</a></div><h1 id="troubleshooting-decision-tree">Troubleshooting decision tree</h1>
+<p>Preserve every partial session. Never edit a raw <code>.log</code>, timing CSV, capture JSON,
+cue CSV or cue JSON. Record what happened in <code>notes.txt</code>.</p>
+<h2 id="the-board-does-not-appear">The board does not appear</h2>
+<ol>
+<li>Does <code>session.py ports</code> show a new STLink virtual COM port after plug-in?
+<ul>
+<li><strong>No:</strong> close Arduino IDE, try the Nucleo ST-LINK connector, a known USB
+data cable and a different PC USB socket. Check Device Manager. Reinstall
+the ST-LINK driver from STM32CubeProgrammer if Windows shows an unknown
+device.</li>
+<li><strong>Yes:</strong> write down the new COM number and use it exactly, for example
+<code>COM7</code>.</li>
+</ul>
+</li>
+<li>If upload also fails, confirm the board is NUCLEO-U385RG-Q, the upload method
+is STM32CubeProgrammer (SWD), and the ST-LINK section is powered.</li>
+</ol>
+<h2 id="permissionerror-access-is-denied-or-port-already-in-use"><code>PermissionError</code>, <code>Access is denied</code>, or port already in use</h2>
+<p>Close Arduino Serial Monitor, Arduino Serial Plotter and every other capture
+window. Only one process can own the virtual COM port. Wait five seconds and
+retry in a <strong>newly created session directory</strong> if a previous capture already
+wrote files.</p>
+<h2 id="upload-succeeds-but-serial-output-is-blank-or-unreadable">Upload succeeds but serial output is blank or unreadable</h2>
+<ul>
+<li>Connectivity firmware uses 115200 baud; streaming firmware uses 921600 baud.</li>
+<li>Press reset once after opening Serial Monitor.</li>
+<li>Confirm the selected port disappears when the board is unplugged.</li>
+<li>Confirm <code>U(S)ART support = Enabled (generic Serial)</code> and <code>USB support = None</code>.</li>
+<li>The stream uses the ST-LINK VCP, not native USB CDC.</li>
+</ul>
+<h2 id="connectivity-is-below-five-sensors-or-changes-when-the-cable-moves">Connectivity is below five sensors or changes when the cable moves</h2>
+<p>Stop participant work. Power down. Check the adapter is fully seated and
+strain-relieved, then repeat the unpowered inspection and full connectivity
+test. Do not change garment connector hole assignments or firmware pins by
+guessing. A repeatable movement-dependent failure returns to repair.</p>
+<h2 id="streaming-prints-read_fail-recover-or-a-missing-sensor-warning">Streaming prints <code>READ_FAIL</code>, <code>RECOVER</code>, or a missing-sensor warning</h2>
+<ul>
+<li>A startup warning that an IMU is not streaming: stop, reflash/run connectivity
+firmware, and require all five sensors.</li>
+<li>Any observed interval without all five sensors during cues: stop and review
+the round even if the automated result is only a warning. The checker blocks
+missing full-interval coverage, per-sensor receipt gaps over its conservative
+gate, invalid sensor samples and clock resets; other incomplete-frame counts
+remain warnings for human judgment. Preserve the files, fix the hardware
+problem and repeat in a new session if appropriate.</li>
+<li>A <code>RECOVER begin/done</code> pair means self-recovery was attempted. Record it. Do
+not treat recovery as proof the missing interval is scientifically usable.</li>
+</ul>
+<h2 id="cue-program-refuses-to-start">Cue program refuses to start</h2>
+<ul>
+<li>Confirm Window A says <code>RECORDING</code> for the <strong>same session path</strong>.</li>
+<li>Confirm Window A is still receiving data and its <code>imu_timing.csv</code> is updating.</li>
+<li>Run both programs on the same physical computer.</li>
+<li>If capture stopped or the wrong directory was used, preserve the folder and
+create a new session. Do not combine capture from one folder with cues from
+another.</li>
+</ul>
+<h2 id="cues-were-interrupted-read-incorrectly-or-the-participant-made-an-error">Cues were interrupted, read incorrectly, or the participant made an error</h2>
+<p>Press Ctrl+C in the capture window after making the situation safe. Keep all
+files. Record the last reliable bout and the mistake in notes. Create a new
+session if repeating the round; never rerun cues into the same folder. If only
+one bout was performed incorrectly and the round is not repeated, identify the
+bout for UCL rather than altering timestamps.</p>
+<h2 id="capture-stops-pc-sleeps-usb-disconnects-or-mcu-time-restarts">Capture stops, PC sleeps, USB disconnects, or MCU time restarts</h2>
+<p>The round is blocked. Keep the PC connected to mains power and disable automatic
+sleep before the next attempt. Fix the cable/port issue, pass connectivity again,
+then create a new session. A backwards MCU clock creates a new timestamp segment
+and is deliberately blocked by QC.</p>
+<h2 id="check-says-blocked"><code>check</code> says <code>BLOCKED</code></h2>
+<p>Read the listed critical errors and the generated <code>qc_*.json</code>. Do not delete the
+folder or call it passed. If the problem is repeatable, correct the cause and run
+the entire donning/round again in a new directory. Return both attempts.</p>
+<h2 id="check-says-review_required"><code>check</code> says <code>REVIEW_REQUIRED</code></h2>
+<p>This is expected. Review the report, <code>placement.csv</code>, photos, tap order, cue
+completion and notes. Confirm all five sensors cover the cue interval and that
+the session identity is consistent. Write <code>ACCEPT FOR RETURN</code> or <code>REJECT/REPEAT</code>
+with your initials and reason in <code>notes.txt</code>. Automated checks cannot verify
+movement quality, actual body position or scientific validity.</p>
+</main><script>
+document.querySelectorAll('pre').forEach(pre=>{const b=document.createElement('button');b.textContent='Copy';b.onclick=async()=>{const t=pre.querySelector('code').textContent;try{await navigator.clipboard.writeText(t);b.textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents(pre.querySelector('code'));const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected — press Ctrl+C';}};pre.prepend(b);});
+</script></body></html>

@@ -1,0 +1,212 @@
+[
+  {
+    "path": ".gitignore",
+    "bytes": 41,
+    "sha256": "5612c060b853049fffab0f131fde533277a77017d61a849ad955c278c96f459b"
+  },
+  {
+    "path": "BUILD.html",
+    "bytes": 11165,
+    "sha256": "081b46df156582e4bc72d6c6f645ba39fa4bcaa5168dd735b227f99a42143ab5"
+  },
+  {
+    "path": "BUILD.md",
+    "bytes": 6863,
+    "sha256": "85e0f1947ec6edb344a62abcc2de22c48555f7cb559a7ccd984dacb28431c5fe"
+  },
+  {
+    "path": "CODE-LICENSE.txt",
+    "bytes": 1066,
+    "sha256": "345bea66ed7fd15182e09553f887c1a277cec5fdc97302be6af7084aa1804ad6"
+  },
+  {
+    "path": "DISTRIBUTION-NOTES.txt",
+    "bytes": 369,
+    "sha256": "949a280e82e8b992340dadf84ff53a2e89fd95f5526f0320edb78165b37b558c"
+  },
+  {
+    "path": "README.html",
+    "bytes": 10265,
+    "sha256": "62c03d382ad96a85fc5143b3609515f8a1e82c6a8409dccec7925ebf6e141211"
+  },
+  {
+    "path": "README.md",
+    "bytes": 6101,
+    "sha256": "539466ae5adcac7c9fa0ac72563971023406f0d07d61bcc279750746d760ae8f"
+  },
+  {
+    "path": "docs/forms.html",
+    "bytes": 4097,
+    "sha256": "1a6a160eed890c9c0c89122909d6d23a697e96b36ef1d382e877e39ff3806a13"
+  },
+  {
+    "path": "docs/forms.md",
+    "bytes": 1277,
+    "sha256": "4d5f25e908f1cc1c57ad9a5a591b8ac39db9c84f62767e66b9789e94fcd0f855"
+  },
+  {
+    "path": "docs/hardware-acceptance.html",
+    "bytes": 7404,
+    "sha256": "a13ea24e4108706ae929c202bd9d983cc9d14b477b91464e3938ed841d99a23c"
+  },
+  {
+    "path": "docs/hardware-acceptance.md",
+    "bytes": 4274,
+    "sha256": "3b59cad0bb462324a3c8c37f8b8ea63c55f63fdca16e665e99d0eeb1201ffdd6"
+  },
+  {
+    "path": "docs/operator-guide.html",
+    "bytes": 10272,
+    "sha256": "bf809494c0f65bb180f8bc286415f2e29054fe913f0ead42c22f78af60220148"
+  },
+  {
+    "path": "docs/operator-guide.md",
+    "bytes": 6408,
+    "sha256": "5269caf6ef994449d3e7ac929415e721fb5284897db620d7fa1d13bffa8031ac"
+  },
+  {
+    "path": "docs/print-checklist.html",
+    "bytes": 5033,
+    "sha256": "4c7c614c36a30bd9024b08da7853c5aa5b1e44a3b4211f0db3e969f1a62a88dc"
+  },
+  {
+    "path": "docs/print-checklist.md",
+    "bytes": 2360,
+    "sha256": "758d951fea92b2175ba3cb4fb4a55c570f15069a1506c48339e223444c91e7e3"
+  },
+  {
+    "path": "docs/troubleshooting.html",
+    "bytes": 8115,
+    "sha256": "274b3f17ab52d7f7e77df3d7028e424ec873cab6aa6437af57d7c945707f989a"
+  },
+  {
+    "path": "docs/troubleshooting.md",
+    "bytes": 4497,
+    "sha256": "d97acc1e3b3d604816ba01c37de1c8801c94e6a8b2734dba2a30d3794bfc35ff"
+  },
+  {
+    "path": "firmware/imu_i3c_connectivity_5/build_opt.h",
+    "bytes": 25,
+    "sha256": "b8ac71182d9d4cf65da10b76bc307a966085bfa372ce0afe6a2d1c07d2bc93cf"
+  },
+  {
+    "path": "firmware/imu_i3c_connectivity_5/imu_i3c_connectivity_5.ino",
+    "bytes": 12700,
+    "sha256": "b178d9cd8cafa0e9ac76bff6ed8513163dfa00376a18ccc3c9a8b58f1226b882"
+  },
+  {
+    "path": "firmware/imu_i3c_xyz_sflp/build_opt.h",
+    "bytes": 25,
+    "sha256": "b8ac71182d9d4cf65da10b76bc307a966085bfa372ce0afe6a2d1c07d2bc93cf"
+  },
+  {
+    "path": "firmware/imu_i3c_xyz_sflp/imu_i3c_xyz_sflp.ino",
+    "bytes": 26760,
+    "sha256": "17bc4388a1317e82e9c76cf1af8a3ca2106c797eb8d88f613a049313c3c5d565"
+  },
+  {
+    "path": "firmware/prebuilt/README.html",
+    "bytes": 3738,
+    "sha256": "4bfce88262aa3b6ae315ed8f1e15e82a6cb28f597a641fab054d5099a186119d"
+  },
+  {
+    "path": "firmware/prebuilt/README.md",
+    "bytes": 1073,
+    "sha256": "5c16faf2384e302869fb1c3dda7da20058bad202f8b2f70b13bffdfd54d5d0de"
+  },
+  {
+    "path": "firmware/prebuilt/build-manifest.json",
+    "bytes": 1312,
+    "sha256": "94e5900d394d7bf9edbae8a17bf0aaa204cd125067082a3a64cb785410feffec"
+  },
+  {
+    "path": "firmware/prebuilt/connectivity.bin",
+    "bytes": 25380,
+    "sha256": "d3a36549fe1c1b729c5004a026c2016c470c26d0976101446a725cd7b9f4e235"
+  },
+  {
+    "path": "firmware/prebuilt/licenses/STM32U3-CMSIS.txt",
+    "bytes": 11348,
+    "sha256": "040dd5cd82cc4d2f960e82d519e2af32deac8c2bbd7b0071676cc91ec8eccea0"
+  },
+  {
+    "path": "firmware/prebuilt/licenses/STM32U3-HAL.txt",
+    "bytes": 1485,
+    "sha256": "d2e8262ec447d3bf9225495294ec7ba1db7b7e902392a8dc38db361fc60936f0"
+  },
+  {
+    "path": "firmware/prebuilt/licenses/STM32duino.txt",
+    "bytes": 42525,
+    "sha256": "36d165776a356822f2613e5357b60bf0d195f2684baab663dfeb6baa45590e6a"
+  },
+  {
+    "path": "firmware/prebuilt/streaming.bin",
+    "bytes": 27908,
+    "sha256": "121fecafd42d958eaf2b8117c8d1e2587027d89eb5966b3b5870208418f8cbd7"
+  },
+  {
+    "path": "protocol/data-return.html",
+    "bytes": 7851,
+    "sha256": "3dcd6f0390ac1b03a7552c5ae248b6e6c661a0cf228cb8dffb6c70375857ce51"
+  },
+  {
+    "path": "protocol/data-return.md",
+    "bytes": 4549,
+    "sha256": "794a8a2f1739c81cf8c95bc0259b0d7b4c4e73b8e4e4afe959b1b5cefee8987a"
+  },
+  {
+    "path": "protocol/session-plan.html",
+    "bytes": 13689,
+    "sha256": "bccd415cd4dfb2f7dd67d571ec3443cf2d8d30a6b52919c95940fd3fa54b6669"
+  },
+  {
+    "path": "protocol/session-plan.md",
+    "bytes": 8976,
+    "sha256": "8e0f7b6cc6c9ee9b3abd5c15e0866ec04dd2036adfdd68eb7e35115d6baf49b0"
+  },
+  {
+    "path": "requirements.txt",
+    "bytes": 14,
+    "sha256": "0b81718d1cbe8a7696e45a9388c9205272b5e345cd79d0cf1ccfb7a9fd1925e9"
+  },
+  {
+    "path": "tests/test_review_taps.py",
+    "bytes": 2119,
+    "sha256": "39d2966d60ad0e06314dec05046ad1f4961bcf87bb8ddb66ccec3c33b758c4b3"
+  },
+  {
+    "path": "tests/test_session.py",
+    "bytes": 8834,
+    "sha256": "949d7dba2a869e36d2572abca601e75e27c6722a0679cb24198012598f19e4d7"
+  },
+  {
+    "path": "tools/TECHNICAL_NOTES.html",
+    "bytes": 10782,
+    "sha256": "d456b7572adea66ad8ed12201b1aee101582bb7b1f004894bc4136bbbc087601"
+  },
+  {
+    "path": "tools/TECHNICAL_NOTES.md",
+    "bytes": 7245,
+    "sha256": "9158f5d5650b178d1bee44e4cf4ccd25ab67b1b56a24ea66e880d14a92645714"
+  },
+  {
+    "path": "tools/review_taps.py",
+    "bytes": 7864,
+    "sha256": "037b01387dd907676287f6e6507ffc231b21f2b71e86a2e166447084f37cb440"
+  },
+  {
+    "path": "tools/session.py",
+    "bytes": 22011,
+    "sha256": "b831f85c14a36e79d5af2a53dad121cee1f5de5048186a855a94ed25f6adea7b"
+  },
+  {
+    "path": "verify_package.py",
+    "bytes": 591,
+    "sha256": "5ec99a00ab8c433e244d75d7899b41f34d401f12bf8bd222718a446e260dfdca"
+  },
+  {
+    "path": "wheelhouse/pyserial-3.5-py2.py3-none-any.whl",
+    "bytes": 90585,
+    "sha256": "c4451db6ba391ca6ca299fb3ec7bae67a5c55dde170964c7a14ceefec02f2cf0"
+  }
+]

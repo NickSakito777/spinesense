@@ -1,0 +1,54 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Acquisition tool interface and validation limits</title><style>
+:root { color-scheme:light; font:17px/1.65 system-ui,Segoe UI,sans-serif; color:#183044; background:#eef2f5; }
+body{margin:0}main{max-width:980px;margin:24px auto;padding:36px 48px;background:white;border-radius:12px}
+h1,h2,h3{line-height:1.25;color:#102638;scroll-margin-top:20px}h1{font-size:2rem}h2{margin-top:2.4rem;border-top:1px solid #dce4e9;padding-top:1.2rem}
+a{color:#075bb5;text-underline-offset:3px}table{border-collapse:collapse;display:block;overflow-x:auto;margin:1.3rem 0;font-size:.92rem}td,th{border:1px solid #cbd7df;padding:10px 13px;vertical-align:top}th{background:#eff5fa;text-align:left}
+pre{position:relative;background:#102638;color:#f0f6fc;border-radius:8px;padding:18px;overflow:auto;line-height:1.5;font-size:.84rem;white-space:pre-wrap;overflow-wrap:anywhere}code{font-family:Consolas,monospace}p code,li code,td code{background:#eef2f6;border-radius:3px;padding:2px 4px;overflow-wrap:anywhere}
+blockquote{border-left:4px solid #e6a234;margin:18px 0;padding:6px 20px;background:#fff8e8}img{max-width:100%;height:auto}.meta{font-size:.82rem;color:#526577;border-bottom:1px solid #dce4e9;padding-bottom:16px}button{cursor:pointer;padding:5px 10px;border:1px solid #bacad5;border-radius:4px;background:#f4f8fc;color:#16354a}pre button{float:right;margin-left:12px}li{margin:.35rem 0}
+@media(max-width:700px){main{margin:0;padding:22px 18px;border-radius:0}h1{font-size:1.65rem}}
+@media print{ :root{font-size:10pt;background:white} main{padding:0;margin:0;max-width:none} button{display:none} pre{background:#f1f4f7;color:#102638;break-inside:avoid} tr,img{break-inside:avoid}h1,h2,h3{break-after:avoid}a{color:inherit} }
+</style></head><body><main><div class="meta">SpineSense · Acquisition tutorial · Offline guide &nbsp; <button onclick="window.print()">Print / Save PDF</button> &nbsp; <a href="TECHNICAL_NOTES.md">Markdown source</a></div><h1 id="acquisition-tool-interface-and-validation-limits">Acquisition tool interface and validation limits</h1>
+<p>Use <code>session.py</code> for this handoff. The other two Python files are preserved historical copies and do not implement the new timestamp/anti-overwrite contract. Follow the main handoff tutorial for field operations.</p>
+<h2 id="commands">Commands</h2>
+<p>Run from the <code>tom</code> directory after installing <code>requirements.txt</code> with Python 3.10 or later:</p>
+<pre><code>python tools/session.py ports
+python tools/session.py create --subject SOT01 --round 1 --root data
+python tools/session.py capture --session &quot;FULL_PATH_PRINTED_BY_CREATE&quot; --serial COM3 --kind tap
+python tools/session.py capture --session &quot;FULL_PATH_PRINTED_BY_CREATE&quot; --serial COM3 --kind imu
+python tools/session.py cues --session &quot;FULL_PATH_PRINTED_BY_CREATE&quot; --reps 10 --seed 101
+python tools/session.py check --session &quot;FULL_PATH_PRINTED_BY_CREATE&quot;
+</code></pre>
+<p>Run tap separately and stop it before starting IMU capture. Run IMU capture and cues simultaneously in separate terminals on the same computer. Capture defaults to 921600 baud and a 7200-second safety ceiling; <code>--seconds</code> changes the ceiling. Stop with Ctrl+C. Cues automatically include 8 seconds of neutral standing before and after the sequence. After <code>COMPLETE</code>, wait about 2 seconds for final samples before stopping capture. The operator reads each NEXT movement aloud. Windows emits a beep, not speech. No MoCap is used by these commands.</p>
+<p>A fresh session is mandatory for retrying a capture kind or cues. Existing files are never reused. <code>create</code> includes timestamp and random suffix in the folder name. No command automatically reconnects after serial failure.</p>
+<h2 id="outputs">Outputs</h2>
+<ul>
+<li><code>session.json</code>: pseudonymous participant ID, don/doff round, creation clocks and computer identity.</li>
+<li><code>placement.csv</code>: editable sensor/body-position mapping; <code>notes.txt</code>: editable operator, firmware, repair and observation fields; <code>photos/</code>: per-round placement images.</li>
+<li><code>tap.log</code>, <code>imu.log</code>: unmodified serial bytes, including diagnostic messages and partial trailing bytes.</li>
+<li><code>tap_timing.csv</code>, <code>imu_timing.csv</code>: one row per physical line, including an incomplete final line if present. Columns: <code>line,offset,bytes,complete,host_unix_ns,host_monotonic_ns,segment,mcu_ms,sensor,valid_sample</code>.</li>
+<li><code>tap_capture.json</code>, <code>imu_capture.json</code>: port, baud, start/end clocks, counts and terminal status. Status can be <code>recording</code>, <code>stopped_by_operator</code>, <code>ceiling_reached</code>, or <code>error</code>. A killed process can leave <code>recording</code>; QC blocks it.</li>
+<li><code>cues.csv</code>: each pre-neutral, NEXT, GO, RETURN_NEUTRAL, post-neutral and completion event is immediately written with Unix and monotonic nanoseconds. Times denote software prompt emission, not actual movement onset or completion.</li>
+<li><code>cue_run.json</code>: seed, planned order, cadence, machine and final status (<code>running</code>, <code>complete</code>, <code>interrupted</code>, <code>error</code>).</li>
+<li><code>qc_&lt;UTC&gt;_&lt;suffix&gt;.json</code>: unique QC report, counts, observed receipt rates, maximum gaps, raw SHA-256 hashes, blocking findings and manual review notes. Keep all attempts and all reports.</li>
+</ul>
+<h2 id="timing-interpretation">Timing interpretation</h2>
+<p>The MCU <code>millis()</code> field is the firmware loop timestamp. Host times are read when <code>readline()</code> returns. They are receipt times, not measurements of sensor acquisition time. Serial transmission, USB/OS buffering and scheduling can delay them. Multiple complete lines arriving in one read share the receipt timestamp. A partial line assembled across reads receives the time of the read that completed it. Raw bytes remain unchanged.</p>
+<p>A decreasing MCU timestamp starts a new segment (possible reset, wrap or other backward jump). The checker recomputes segment boundaries from raw text, checks sidecar integrity and blocks a multi-segment recording from automatic alignment. It does not fit or assert a scientifically valid clock transform. Wall-minus-monotonic variation greater than 100 ms is blocked as a computer-clock diagnostic. This is not an empirically validated motion-analysis threshold. Running the tools on the same computer is necessary, but does not prove sufficient alignment accuracy.</p>
+<p>QC reports the firmware's approximate 120 Hz frame target alongside observed per-sensor receipt rates. Any per-sensor host receipt gap over 1 second is blocked as a conservative operational diagnostic. Shorter gaps are <strong>not</strong> thereby scientifically acceptable. All incomplete-frame and recovery counts, overall timing, tap mapping and movement execution require review. Raw diagnostics such as READ_FAIL or malformed/nonfinite sensor records block the round. A regular sensor stream does not establish sensor accuracy.</p>
+<h2 id="exit-codes-and-limits">Exit codes and limits</h2>
+<p>Ordinary commands: <code>0</code> means command completed; <code>2</code> means input/recording error or interrupted cue run. A safety-ceiling capture can return <code>0</code> but is marked <code>ceiling_reached</code>; inspect QC and sequence coverage.</p>
+<p><code>check</code>: <code>2 = BLOCKED</code>; <code>1 = REVIEW_REQUIRED</code>. It never returns an automatic scientific-quality PASS. REVIEW_REQUIRED means automatic checks found no blocking issue; placement photos, completed notes, tap interpretation, actual movement compliance, firmware/hardware identity and timing suitability still require human inspection. Photos are checked only for file presence, not image content. Missing tap/cue/timing files, unmapped placement, missing photos or incomplete sensor coverage block the combined round.</p>
+<p>The synthetic tests do not validate Windows, physical serial throughput, repaired hardware, optical timing, sensor placement or research outcomes. Run a real Windows trial before participant acquisition. The main field guide defines the local operational review; research acceptance remains a separate decision.</p>
+<h2 id="software-tests">Software tests</h2>
+<pre><code>python -m unittest discover -s tests -v
+</code></pre>
+<p>Tests use fake serial input and synthetic records. They exercise byte preservation, fragmented input, invalid UTF-8, incomplete trailing data, output collision protection, serial disconnection, MCU reset segmentation, missing critical data/sensors, sidecar tampering, cue completion/interruption, clock jumps, long receipt gaps, computer mismatch and seeded movement balance.</p>
+<h2 id="offline-tap-visualization">Offline tap visualization</h2>
+<p>After stopping tap capture, run:</p>
+<pre><code>python tools/review_taps.py --session &quot;FULL_PATH_PRINTED_BY_CREATE&quot;
+</code></pre>
+<p>Double-click the printed <code>tap_review_&lt;UTC&gt;_&lt;suffix&gt;.html</code> to open it offline in a browser. It shows five common-scale SVG traces of acceleration magnitude (mg) against elapsed MCU loop time. Min/max-preserving reduction keeps local impulses visible without embedding every sample. No external assets, libraries or network are required. Identify the five ordered three-tap groups using the field notes, photographs and physical inspection; the tool does not assign body positions. Ambiguous coupled motion must not be treated as a confirmed mapping.</p>
+<p>Exit <code>1</code> means manual review required; <code>2</code> means blocked/missing/invalid input. Invalid sample counts and partial lines are explicit. A backward MCU timestamp suppresses the graphs to prevent joining distinct clock segments. This view does not replace <code>session.py check</code> or validate receipt-time alignment. Keep the HTML with all original data. Synthetic tests cover five-sensor parsing, empty/invalid/partial input, reset suppression and preservation of positive/negative impulses during downsampling.</p>
+</main><script>
+document.querySelectorAll('pre').forEach(pre=>{const b=document.createElement('button');b.textContent='Copy';b.onclick=async()=>{const t=pre.querySelector('code').textContent;try{await navigator.clipboard.writeText(t);b.textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents(pre.querySelector('code'));const s=window.getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected — press Ctrl+C';}};pre.prepend(b);});
+</script></body></html>

@@ -1,5 +1,9 @@
 # SpineSense
 
+## Southampton / Tom: independent testing and data collection
+
+The [step-by-step Windows tutorial and acquisition kit](docs/tom-handoff/README.md) covers repaired-garment checks, software setup, tap mapping, randomized movement sessions, data checks and return instructions. Start there for the September 2026 handoff. Use its bundled firmware and wiring together; it is separate from the older development instructions below. No participant data or trained model is included in that kit.
+
 Five-IMU garment-based trunk motion monitoring — firmware, fusion pipeline, and analysis code from an MSc dissertation in Rehabilitation Engineering & Assistive Technologies, UCL.
 
 The system streams synchronised inertial data from five IMUs distributed along the trunk, reconstructs inter-segment orientation, and classifies pre-segmented trunk movements. It was developed and evaluated as a proof of concept for posture monitoring and movement classification, validated against optical motion capture in a controlled offline task.

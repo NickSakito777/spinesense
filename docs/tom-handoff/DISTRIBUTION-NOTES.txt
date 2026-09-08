@@ -1,0 +1,1 @@
+Public acquisition code and tutorial. CODE-LICENSE.txt applies to original project code, not participant recordings or permission to publish research data. Binary Python wheels in wheelhouse retain their embedded license metadata. Firmware toolchain components retain their original licenses. No participant data are licensed for public redistribution by this package.
